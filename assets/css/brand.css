@@ -1,0 +1,6 @@
+/* A dedicated horizontal crop of the supplied wordmark keeps the name legible
+   without the emblem's large square canvas. */
+.wordmark{display:block;width:225px;height:63px;overflow:hidden;flex:0 0 auto;font-size:0;line-height:0}
+.wordmark img{display:block;width:100%;height:100%;object-fit:contain}
+.footer-top .wordmark{width:225px;height:63px}
+@media(max-width:600px){.wordmark{width:180px;height:50px}.footer-top .wordmark{width:180px;height:50px}}

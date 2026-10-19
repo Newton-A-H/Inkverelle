@@ -1,0 +1,12 @@
+{
+  "name": "inkverelle",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A static literary journal, built for GitHub Pages.",
+  "scripts": {
+    "build": "node scripts/build.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
