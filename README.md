@@ -33,7 +33,7 @@ Leave a blank line between stanzas.
 
 Set `poem: true` for poems. For unpublished work, set `status: draft`; drafts are excluded from the generated site. On a public source repository, draft files are still visible in the repository, so do not put private writing there. Push or merge the file to `main` to publish it. GitHub keeps the revision history and lets you restore earlier edits.
 
-Edit `content/site.json` to update the site name, tagline, about copy, contact email, social links, and featured article. The homepage search and RSS feed are generated from published writing. Search runs in each visitor's browser. Real newsletter subscriptions, private editor login, and form-delivered email need a separate service; this static site does not pretend to provide those.
+Edit `content/site.json` to update the site name, tagline, about copy, contact email, social links, and featured article. The homepage search and RSS feed are generated from published writing. Readers can save an article to a reading list stored in their browser on that device; these saves do not sync across browsers or devices. Real newsletter subscriptions, private editor login, and form-delivered email need a separate service; this static site does not pretend to provide those.
 
 ## Preview locally
 
@@ -50,7 +50,7 @@ cd dist
 python -m http.server 8000
 ```
 
-Then visit `http://localhost:8000`. The build also creates article pages, story/poetry/reflection archives, tag and category pages, About, Contact, search, a 404 page, `sitemap.xml`, `robots.txt`, and `feed.xml`.
+Then visit `http://localhost:8000`. The build also creates article pages, story/poetry/reflection archives, tag and category pages, About, Contact, search, a local reading list, a 404 page, `sitemap.xml`, `robots.txt`, and `feed.xml`.
 
 ## Project layout
 
