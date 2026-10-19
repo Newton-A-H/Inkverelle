@@ -1,0 +1,187 @@
+/* Inkverelle's editorial redesign: evergreen ink, warm porcelain, and restrained copper. */
+:root {
+  --paper: #f8f7f2;
+  --ink: #1e302b;
+  --muted: #52645e;
+  --line: #d8ded8;
+  --wine: #a65b3f;
+  --sage: #7d9588;
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'DM Sans', Arial, sans-serif;
+  --accent: #a65b3f;
+}
+
+html { scroll-padding-top: 88px; }
+body { background: var(--paper); color: var(--ink); font-size: 16px; }
+.site-header {
+  position: sticky;
+  top: 0;
+  height: 82px;
+  padding-inline: clamp(22px, 7.5vw, 112px);
+  border-bottom: 1px solid #dce1da;
+  background: rgb(248 247 242 / 94%);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 5px 22px rgb(30 48 43 / 4%);
+}
+.site-nav { gap: clamp(16px, 2.6vw, 38px); }
+.nav-link { color: #52645e; font-size: 12px; letter-spacing: .055em; text-transform: none; }
+.nav-link.active:after { background: var(--accent); height: 2px; }
+.search-open { width: 40px; height: 40px; border: 1px solid var(--line); border-radius: 50%; color: var(--ink); }
+.search-open:hover { background: #e9eee8; }
+
+/* New cover-style opening: a typographic lead paired with a framed editorial illustration. */
+.hero {
+  min-height: 620px;
+  padding: 76px clamp(24px, 9vw, 132px) 78px;
+  grid-template-columns: minmax(0, 1.08fr) minmax(320px, .82fr);
+  gap: clamp(42px, 7vw, 100px);
+  background: #eef2ec;
+  border-bottom: 1px solid #dce3dc;
+}
+.hero-copy { max-width: 640px; }
+.hero .eyebrow { color: #536f62; font-size: 11px; letter-spacing: .15em; }
+.hero h1 { max-width: 670px; margin: 23px 0 22px; color: #1e302b; font-size: clamp(52px, 6vw, 82px); line-height: 1.03; letter-spacing: -.045em; }
+.hero h1 em { color: var(--accent); }
+.hero-intro { max-width: 440px; color: #52645e; font-size: 17px; line-height: 1.75; }
+.hero .text-link { border: 0; border-radius: 3px; padding: 15px 19px; background: #25463b; color: #fffdf8; font-size: 13px; letter-spacing: .01em; }
+.hero .text-link span { color: #f0b28f; }
+.hero .text-link:hover { background: #18392f; }
+.hero-art {
+  height: 420px;
+  border: 1px solid rgb(30 48 43 / 12%);
+  background: linear-gradient(145deg, #e8dfcd, #bdc9b7 70%, #96aa96);
+  box-shadow: 16px 16px 0 #dbe3d9, 0 22px 50px rgb(30 48 43 / 12%);
+}
+.hero-art:before { content: 'INKVERELLE  /  VOL. 01'; position: absolute; z-index: 2; top: 18px; left: 20px; color: #34483e; font: 600 10px var(--sans); letter-spacing: .15em; }
+.sun { background: #d98f68; box-shadow: 0 0 0 18px rgb(217 143 104 / 15%); }
+.hill-back { background: #97a68d; }
+.hill-front { background: #526b59; }
+.tree, .tree:before, .tree:after, .tree i, .tree b { background: #263e35; }
+.hero-index { bottom: 23px; left: clamp(24px, 9vw, 132px); right: clamp(24px, 9vw, 132px); color: #60716a; }
+
+.section-wrap { padding-left: clamp(24px, 10vw, 148px); padding-right: clamp(24px, 10vw, 148px); }
+.featured { padding-top: 96px; padding-bottom: 110px; }
+.section-label { color: #52645e; font-size: 10px; letter-spacing: .13em; }
+.section-label>span:first-child, .eyebrow { color: var(--accent); }
+.label-rule { background: #ccd5ce; }
+.feature-grid { gap: clamp(42px, 9vw, 130px); }
+.feature-art { border: 1px solid #d4d7ca; background: linear-gradient(145deg, #e8e6da, #cbd6c5 80%); }
+.feature-sun { background: #c87b58; }
+.feature-leaf { background: #496755; }
+.feature-copy h2 { color: #20372f; font-size: clamp(40px, 4.2vw, 54px); letter-spacing: -.03em; }
+.feature-copy .eyebrow { font-size: 11px; }
+.feature-excerpt { color: #52645e; font-size: 17px; line-height: 1.8; }
+.article-meta { color: #62736d; font-size: 11px; }
+.circle-link { font-size: 12px; }
+.circle-link b { border-color: #b7c6bb; color: #25463b; }
+
+.latest, .poetry-archive, .reflections-archive { background: #f2f3ed; }
+.poetry-archive { background: #f8f7f2; }
+.reflections-archive { background: #edf1eb; }
+.archive-section { padding-top: clamp(68px, 8vw, 106px); padding-bottom: clamp(72px, 8vw, 108px); }
+.section-heading h2 { color: #20372f; font-size: clamp(35px, 4vw, 48px); letter-spacing: -.035em; }
+.section-heading h2 em, .about h2 em, .newsletter h2 em { color: var(--accent); }
+.writing-grid { gap: 38px 28px; }
+.writing-card { background: #fffefa; border: 1px solid #e0e5de; border-radius: 3px; overflow: hidden; box-shadow: 0 4px 14px rgb(35 54 46 / 3%); }
+.writing-card:hover { box-shadow: 0 14px 30px rgb(35 54 46 / 10%); }
+.card-art { height: clamp(155px, 17vw, 220px); border: 0; border-bottom: 1px solid #e0e5de; }
+.card-info { padding: 19px 20px 18px; }
+.card-date { color: #62736d; font-size: 10px; letter-spacing: .07em; }
+.card-info h3 { color: #20372f; font-size: 23px; line-height: 1.3; }
+.card-info p { color: #52645e; font: 14px/1.7 var(--sans); }
+.card-footer { border-color: #e1e6df; color: #62736d; font-size: 10px; }
+.card-art .art-tag { border-radius: 2px; background: #f8f7f2ed; color: #34483e; font-size: 9px; }
+.poetry-archive .section-heading .add-poem-button { color: #fffdf8; border: 0; border-radius: 3px; background: #25463b; padding: 13px 16px; font-size: 12px; }
+.poetry-archive .section-heading .add-poem-button:hover { background: #18392f; color: #fff; }
+
+.poetry-band { background: #1f3830; color: #f6f5ed; padding-top: clamp(68px, 8vw, 104px); padding-bottom: clamp(74px, 9vw, 112px); }
+.poetry-band .poem { border-color: #536b5f; }
+.poetry-side>p { color: #f3e8d7; }
+.poetry-side>p span, .poem-link span { color: #e9a27d; }
+.poem-kicker { color: #c5d1c7; font-size: 10px; }
+.poem h2 { font-size: clamp(34px, 4vw, 46px); }
+.poem-lines { max-width: 520px; color: #edf0e9; font-size: 18px; line-height: 1.9; }
+.poem-link { border-color: #e9a27d; font-size: 12px; }
+.poetry-mark { color: #688577; }
+
+.about { gap: clamp(48px, 9vw, 132px); padding-top: clamp(78px, 10vw, 130px); padding-bottom: clamp(78px, 10vw, 130px); }
+.about-photo { background: linear-gradient(145deg, #e8e5d9, #cbd6c5); }
+.about h2 { color: #20372f; font-size: clamp(36px, 4vw, 50px); }
+.about-copy>p { color: #52645e; font-size: 16px; line-height: 1.85; }
+.newsletter { background: #efe7db; }
+.newsletter h2 { color: #20372f; font-size: clamp(37px, 4vw, 48px); }
+.newsletter-description { color: #52645e; font-size: 15px; }
+.site-footer { background: #f8f7f2; }
+.footer-bottom { color: #52645e; font-size: 10px; }
+.footer-bottom a:hover, .back-top:hover { color: var(--accent); }
+
+.article-page { background: #f1f3ed; padding: clamp(58px, 8vw, 100px) 24px; }
+.reading-column { max-width: 760px; }
+.reading-column h1 { color: #20372f; font-size: clamp(42px, 6vw, 70px); letter-spacing: -.035em; line-height: 1.08; }
+.article-subtitle { color: #52645e; font-size: 19px; line-height: 1.7; }
+.article-byline { color: #62736d; font-size: 12px; }
+.article-body { color: #293c35; font-size: 19px; line-height: 1.95; }
+.poetry-body { max-width: 620px; font-family: var(--serif); font-size: clamp(18px, 2vw, 21px); line-height: 2; }
+.article-actions button, .article-actions a, .article-taxonomy a { border-color: #cad5cd; color: #25463b; }
+.related-section { padding-top: 70px; padding-bottom: 90px; }
+.static-page { max-width: 960px; padding-top: 76px; padding-bottom: 90px; }
+.static-page h1 { color: #20372f; font-size: clamp(42px, 6vw, 66px); }
+.static-page h2 { color: #20372f; }
+.static-page p, .static-page li { color: #52645e; font-size: 16px; line-height: 1.85; }
+.static-page a { color: #874630; }
+.search-dialog, .article-dialog, .add-poem-dialog { border: 1px solid #d8ded8; border-radius: 5px; background: #fdfcf8; color: var(--ink); }
+.search-box { border-color: #cbd5cd; }
+.search-hint { color: #64736d; }
+:focus-visible { outline-color: #a65b3f; }
+
+@media (max-width: 850px) {
+  .site-header { padding-inline: 6%; }
+  .hero { padding-inline: 7%; grid-template-columns: minmax(0,1fr) minmax(270px,.8fr); gap: 5vw; }
+  .hero-index { left: 7%; right: 7%; }
+  .section-wrap { padding-inline: 7%; }
+}
+@media (max-width: 760px) {
+  html { scroll-padding-top: 70px; }
+  .site-header { height: 70px; }
+  .site-nav { top: 70px; box-shadow: 0 16px 26px rgb(30 48 43 / 9%); }
+  .site-nav.open { border-color: var(--line); }
+}
+@media (max-width: 600px) {
+  .hero { padding: 55px 6% 62px; gap: 38px; }
+  .hero h1 { font-size: clamp(43px, 12vw, 62px); }
+  .hero-intro { font-size: 16px; }
+  .hero-art { height: clamp(245px, 70vw, 350px); box-shadow: 9px 9px 0 #dbe3d9, 0 16px 30px rgb(30 48 43 / 10%); }
+  .hero-index { left: 6%; right: 6%; }
+  .featured { padding-top: 70px; padding-bottom: 76px; }
+  .feature-grid { gap: 28px; }
+  .feature-excerpt { font-size: 15px; }
+  .archive-section { padding-top: 68px; padding-bottom: 74px; }
+  .writing-grid { grid-template-columns: 1fr; gap: 22px; }
+  .writing-card { display: grid; grid-template-columns: minmax(110px, .72fr) 1.28fr; align-items: stretch; }
+  .card-art { height: 100%; min-height: 188px; border: 0; border-right: 1px solid #e0e5de; }
+  .card-art:before { max-width: 90px; }
+  .card-info { padding: 16px 15px; }
+  .card-info h3 { font-size: 20px; }
+  .card-info p { font-size: 13px; line-height: 1.55; }
+  .card-footer { gap: 8px; font-size: 9px; }
+  .poetry-band { padding-inline: 7%; }
+  .poem { padding-left: 0; border-left: 0; }
+  .poetry-side>p { margin-top: 28px; font-size: 23px; }
+  .poem-lines { font-size: 16px; }
+  .about { gap: 34px; }
+  .about-photo { height: 280px; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .footer-bottom div { gap: 12px 18px; }
+  .article-page { padding-inline: 22px; }
+  .article-body { font-size: 17px; }
+  .poetry-body { font-size: 18px; }
+}
+@media (max-width: 380px) {
+  .writing-card { grid-template-columns: 100px 1fr; }
+  .card-art { min-height: 190px; }
+  .card-info { padding: 13px 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
