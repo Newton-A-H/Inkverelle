@@ -1,0 +1,130 @@
+/* Home wireframe: cover, browse index, editor's selection, then three clear shelves. */
+.site-header { max-width: 100%; }
+.hero {
+  width: min(100%, 1440px);
+  min-height: 620px;
+  margin-inline: auto;
+  padding: 68px clamp(28px, 7.6vw, 112px) 78px;
+  grid-template-columns: minmax(0, 1.05fr) minmax(320px, .8fr);
+  gap: clamp(42px, 8vw, 116px);
+  align-items: center;
+  background: #f8f7f2;
+  border-bottom: 0;
+}
+.hero-copy { padding-block: 18px; }
+.hero-copy .eyebrow { display: inline-flex; align-items: center; gap: 9px; }
+.hero h1 { max-width: 650px; font-size: clamp(52px, 6vw, 76px); line-height: 1.05; }
+.hero-intro { max-width: 440px; }
+.hero-art {
+  display: flex;
+  flex-direction: column;
+  height: 432px;
+  padding: 17px 20px 19px;
+  overflow: hidden;
+  background: #e6ebdf;
+  border: 1px solid #d4ded2;
+  box-shadow: 11px 11px 0 #dce5da;
+}
+.hero-art:before { content: none; }
+.cover-masthead { display: flex; justify-content: space-between; align-items: center; color: #30483e; font-size: 9px; font-weight: 700; letter-spacing: .15em; }
+.cover-masthead span:last-child { color: #61776b; font-size: 8px; font-weight: 500; }
+.cover-scene { position: relative; flex: 1; min-height: 0; margin: 14px -20px 0; overflow: hidden; background: linear-gradient(150deg,#e5dfca,#b9c9b7 68%,#8ba18d); }
+.cover-scene .sun { top: 12%; right: 17%; width: 104px; height: 104px; }
+.cover-scene .hill { bottom: -80px; }
+.cover-scene .hill-back { height: 190px; }
+.cover-scene .hill-front { height: 205px; bottom: -125px; }
+.cover-scene .tree { bottom: 44px; height: 145px; }
+.cover-caption { display: flex; align-items: center; gap: 18px; padding-top: 14px; color: #30483e; }
+.cover-caption>span:first-child { width: 72px; flex: 0 0 auto; font-size: 8px; line-height: 1.5; letter-spacing: .13em; color: #9a543b; }
+.cover-caption strong { flex: 1; font: 500 19px/1.2 var(--serif); }
+.cover-caption .cover-index { display: flex; align-items: center; gap: 8px; color: #60746a; font-size: 7px; letter-spacing: .08em; }
+.cover-index b { color: #9a543b; font-size: 13px; }
+.hero-index { display: none; }
+
+.journal-index {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  width: min(calc(100% - 2 * clamp(24px, 8vw, 116px)), 1200px);
+  margin: 0 auto;
+  border-top: 1px solid #d9dfd8;
+  border-bottom: 1px solid #d9dfd8;
+}
+.journal-index>a {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  grid-template-rows: auto auto;
+  column-gap: 13px;
+  align-items: center;
+  min-height: 94px;
+  padding: 17px 22px;
+  color: #20372f;
+  transition: background .2s ease;
+}
+.journal-index>a+a { border-left: 1px solid #d9dfd8; }
+.journal-index>a:hover { background: #edf1eb; }
+.index-number { grid-row: 1 / span 2; align-self: start; color: #a65b3f; font: 500 13px var(--serif); }
+.index-title { font: 500 19px var(--serif); }
+.index-note { grid-column: 2; color: #5f6f67; font-size: 11px; }
+.index-count { grid-column: 3; grid-row: 1 / span 2; color: #66766e; font-size: 8px; letter-spacing: .1em; white-space: nowrap; }
+
+.featured {
+  width: min(100%, 1440px);
+  margin-inline: auto;
+  padding: clamp(72px, 8vw, 110px) clamp(28px, 11vw, 160px) clamp(78px, 9vw, 120px);
+  background: #fffefa;
+}
+.featured .section-label { margin-bottom: 28px; }
+.feature-grid { grid-template-columns: minmax(0, .95fr) minmax(0, 1fr); gap: clamp(44px, 9vw, 132px); margin-top: 0; }
+.feature-art { min-height: 340px; height: 100%; }
+.feature-copy { padding-block: 18px; }
+.feature-copy h2 { max-width: 540px; }
+.circle-link { gap: 14px; }
+.latest, .poetry-archive, .reflections-archive {
+  width: min(100%, 1440px);
+  margin-inline: auto;
+}
+.section-heading { align-items: end; }
+.section-view { padding-bottom: 7px; border-bottom: 1px solid #a65b3f; color: #78432f; font-size: 12px; white-space: nowrap; }
+.section-view:hover { color: #20372f; }
+.poetry-archive .section-heading .section-view { margin-left: auto; }
+.poetry-archive .section-heading .add-poem-button { margin-left: 18px; }
+.poetry-band { width: min(100%, 1440px); margin-inline: auto; }
+.about { width: min(100%, 1440px); margin-inline: auto; }
+.newsletter { border-block: 1px solid #ded9cd; }
+.site-footer { padding-inline: max(8%, calc((100% - 1200px) / 2)); }
+
+@media (max-width: 850px) {
+  .hero { min-height: 0; padding: 60px 7% 76px; }
+  .hero-art { height: 390px; }
+  .journal-index { width: 86%; }
+  .journal-index>a { padding-inline: 14px; column-gap: 9px; }
+  .index-count { font-size: 7px; }
+  .featured { padding-inline: 8%; }
+}
+@media (max-width: 680px) {
+  .hero { padding: 52px 6% 58px; }
+  .hero-art { width: calc(100% - 10px); height: clamp(320px, 88vw, 410px); }
+  .cover-caption { gap: 12px; }
+  .cover-caption strong { font-size: 17px; }
+  .cover-caption .cover-index { font-size: 6px; }
+  .journal-index { width: 100%; grid-template-columns: 1fr; border-bottom: 0; }
+  .journal-index>a { min-height: 74px; padding: 12px 7%; grid-template-columns: 30px 1fr auto; }
+  .journal-index>a+a { border-left: 0; border-top: 1px solid #d9dfd8; }
+  .index-title { font-size: 18px; }
+  .index-note { font-size: 10px; }
+  .featured { padding: 68px 6% 76px; }
+  .feature-grid { grid-template-columns: 1fr; gap: 26px; }
+  .feature-art { min-height: 0; height: 250px; }
+  .section-heading { align-items: flex-end; }
+  .section-view { font-size: 10px; }
+  .poetry-archive .section-heading { display: grid; grid-template-columns: 1fr auto; }
+  .poetry-archive .section-heading>div:first-child { grid-column: 1 / -1; }
+  .poetry-archive .section-heading .section-view { grid-column: 1; grid-row: 2; margin: 5px 0 0; justify-self: start; }
+  .poetry-archive .section-heading .add-poem-button { grid-column: 2; grid-row: 2; margin: 0; font-size: 10px; }
+}
+@media (max-width: 380px) {
+  .cover-caption>span:first-child { width: 56px; font-size: 7px; }
+  .cover-caption .cover-index { max-width: 83px; line-height: 1.4; }
+  .section-heading { align-items: flex-start; }
+  .section-view { margin-top: 8px; }
+}
