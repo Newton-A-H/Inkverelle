@@ -195,7 +195,11 @@ function slugify(value) { return String(value).normalize('NFKD').replace(/[\u030
 function capitalize(value) { return String(value).charAt(0).toUpperCase() + String(value).slice(1); }
 function readingTime(body) { return `${Math.max(1, Math.ceil(body.split(/\s+/).length / 200))} min read`; }
 function formatDate(value) { return new Date(`${value}T12:00:00`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); }
-function today() { return new Date().toISOString().slice(0, 10); }
+function today() {
+  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Nairobi', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date());
+  const value = Object.fromEntries(parts.map(part => [part.type, part.value]));
+  return `${value.year}-${value.month}-${value.day}`;
+}
 function duplicates(values) { return values.filter((value, index) => values.indexOf(value) !== index); }
 function escapeHTML(value) { return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]); }
 function escapeAttribute(value) { return escapeHTML(value); }
