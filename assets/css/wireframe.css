@@ -1,130 +1,161 @@
-/* Home wireframe: cover, browse index, editor's selection, then three clear shelves. */
-.site-header { max-width: 100%; }
+/* A three-column literary front page: section rail, reading stream, latest notes. */
 .hero {
-  width: min(100%, 1440px);
-  min-height: 620px;
-  margin-inline: auto;
-  padding: 68px clamp(28px, 7.6vw, 112px) 78px;
-  grid-template-columns: minmax(0, 1.05fr) minmax(320px, .8fr);
-  gap: clamp(42px, 8vw, 116px);
-  align-items: center;
-  background: #f8f7f2;
-  border-bottom: 0;
+  width: 100%;
+  min-height: 530px;
+  padding: clamp(52px, 7vw, 94px) clamp(26px, 8vw, 116px);
+  grid-template-columns: minmax(0, 1.08fr) minmax(310px, .78fr);
+  gap: clamp(46px, 8vw, 120px);
+  background: #eef2ec;
+  border-bottom: 1px solid #d8ded8;
 }
-.hero-copy { padding-block: 18px; }
-.hero-copy .eyebrow { display: inline-flex; align-items: center; gap: 9px; }
-.hero h1 { max-width: 650px; font-size: clamp(52px, 6vw, 76px); line-height: 1.05; }
-.hero-intro { max-width: 440px; }
+.hero h1 { max-width: 630px; font-size: clamp(52px, 6vw, 79px); line-height: 1.04; }
+.hero-intro { max-width: 445px; font-size: 17px; line-height: 1.8; }
+.hero .text-link { margin-top: 7px; }
 .hero-art {
-  display: flex;
-  flex-direction: column;
-  height: 432px;
-  padding: 17px 20px 19px;
-  overflow: hidden;
-  background: #e6ebdf;
-  border: 1px solid #d4ded2;
-  box-shadow: 11px 11px 0 #dce5da;
+  position: relative;
+  height: clamp(330px, 36vw, 460px);
+  min-height: 0;
+  padding: 0;
+  border: 1px solid #d2d9cf;
+  background: #e5e9dc;
+  box-shadow: 12px 12px 0 #dce5da;
 }
 .hero-art:before { content: none; }
-.cover-masthead { display: flex; justify-content: space-between; align-items: center; color: #30483e; font-size: 9px; font-weight: 700; letter-spacing: .15em; }
-.cover-masthead span:last-child { color: #61776b; font-size: 8px; font-weight: 500; }
-.cover-scene { position: relative; flex: 1; min-height: 0; margin: 14px -20px 0; overflow: hidden; background: linear-gradient(150deg,#e5dfca,#b9c9b7 68%,#8ba18d); }
-.cover-scene .sun { top: 12%; right: 17%; width: 104px; height: 104px; }
-.cover-scene .hill { bottom: -80px; }
-.cover-scene .hill-back { height: 190px; }
-.cover-scene .hill-front { height: 205px; bottom: -125px; }
-.cover-scene .tree { bottom: 44px; height: 145px; }
-.cover-caption { display: flex; align-items: center; gap: 18px; padding-top: 14px; color: #30483e; }
-.cover-caption>span:first-child { width: 72px; flex: 0 0 auto; font-size: 8px; line-height: 1.5; letter-spacing: .13em; color: #9a543b; }
-.cover-caption strong { flex: 1; font: 500 19px/1.2 var(--serif); }
-.cover-caption .cover-index { display: flex; align-items: center; gap: 8px; color: #60746a; font-size: 7px; letter-spacing: .08em; }
-.cover-index b { color: #9a543b; font-size: 13px; }
+.hero-art img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.hero-art-caption { position: absolute; left: 16px; right: 16px; bottom: 15px; display: flex; justify-content: space-between; color: #fffdf7; text-shadow: 0 1px 10px #152c2380; font-size: 8px; font-weight: 600; letter-spacing: .14em; }
+.hero-art-caption b { font-weight: 500; }
 .hero-index { display: none; }
 
-.journal-index {
+.journal-layout {
   display: grid;
-  grid-template-columns: repeat(3,minmax(0,1fr));
-  width: min(calc(100% - 2 * clamp(24px, 8vw, 116px)), 1200px);
+  grid-template-columns: 190px minmax(0, 1fr) 225px;
+  align-items: start;
+  gap: clamp(20px, 2.5vw, 38px);
+  width: min(100%, 1540px);
   margin: 0 auto;
-  border-top: 1px solid #d9dfd8;
-  border-bottom: 1px solid #d9dfd8;
+  padding: 48px clamp(24px, 4.6vw, 68px) 76px;
+  border-top: 1px solid #dfe3dc;
 }
-.journal-index>a {
-  display: grid;
-  grid-template-columns: 32px 1fr auto;
-  grid-template-rows: auto auto;
-  column-gap: 13px;
-  align-items: center;
-  min-height: 94px;
-  padding: 17px 22px;
-  color: #20372f;
-  transition: background .2s ease;
-}
-.journal-index>a+a { border-left: 1px solid #d9dfd8; }
-.journal-index>a:hover { background: #edf1eb; }
-.index-number { grid-row: 1 / span 2; align-self: start; color: #a65b3f; font: 500 13px var(--serif); }
-.index-title { font: 500 19px var(--serif); }
-.index-note { grid-column: 2; color: #5f6f67; font-size: 11px; }
-.index-count { grid-column: 3; grid-row: 1 / span 2; color: #66766e; font-size: 8px; letter-spacing: .1em; white-space: nowrap; }
+.journal-rail, .issue-rail { position: sticky; top: 108px; align-self: start; }
+.rail-heading, .issue-rail-heading { margin: 0 0 20px; color: #61736a; font-size: 9px; font-weight: 700; letter-spacing: .12em; }
+.rail-nav { display: grid; border-top: 1px solid #d8ded8; }
+.rail-nav a { display: flex; align-items: baseline; gap: 9px; padding: 13px 0; border-bottom: 1px solid #d8ded8; color: #284238; font-size: 12px; transition: color .2s ease, padding-left .2s ease; }
+.rail-nav a:hover { padding-left: 4px; color: #a65b3f; }
+.rail-nav a>span { color: #a65b3f; font: 500 11px var(--serif); }
+.rail-nav small { margin-left: auto; color: #74837a; font-size: 9px; }
+.rail-note { margin-top: 31px; padding: 18px; background: #eef2ec; }
+.rail-ornament { color: #a65b3f; font-size: 19px; }
+.rail-note p { margin: 12px 0 16px; color: #344d42; font: italic 16px/1.5 var(--serif); }
+.rail-note a, .rail-readlist { color: #804832; font-size: 9px; font-weight: 600; letter-spacing: .08em; }
+.rail-readlist { display: flex; justify-content: space-between; margin-top: 19px; padding: 13px 0; border-bottom: 1px solid #d8ded8; color: #314a3f; letter-spacing: 0; font-size: 11px; }
+.rail-readlist span { color: #a65b3f; }
 
-.featured {
-  width: min(100%, 1440px);
-  margin-inline: auto;
-  padding: clamp(72px, 8vw, 110px) clamp(28px, 11vw, 160px) clamp(78px, 9vw, 120px);
+.journal-stream { min-width: 0; background: #fffefa; border: 1px solid #e0e5de; }
+.journal-stream>.featured {
+  width: auto;
+  margin: 0;
+  padding: 32px 30px 38px;
   background: #fffefa;
 }
-.featured .section-label { margin-bottom: 28px; }
-.feature-grid { grid-template-columns: minmax(0, .95fr) minmax(0, 1fr); gap: clamp(44px, 9vw, 132px); margin-top: 0; }
-.feature-art { min-height: 340px; height: 100%; }
-.feature-copy { padding-block: 18px; }
-.feature-copy h2 { max-width: 540px; }
-.circle-link { gap: 14px; }
-.latest, .poetry-archive, .reflections-archive {
-  width: min(100%, 1440px);
-  margin-inline: auto;
+.journal-stream>.featured .section-label { margin-bottom: 23px; }
+.journal-stream>.featured .feature-grid { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 24px; align-items: start; }
+.journal-stream>.featured .feature-art { min-height: 250px; height: 100%; }
+.journal-stream>.featured .feature-copy { padding: 7px 0 0; }
+.journal-stream>.featured .feature-copy h2 { font-size: clamp(30px, 3.2vw, 43px); }
+.journal-stream>.featured .feature-excerpt { font: 14px/1.7 var(--sans); }
+.journal-stream>.featured .article-meta { flex-wrap: wrap; font-size: 9px; }
+.journal-stream>.archive-section {
+  width: auto;
+  margin: 0;
+  padding: 34px 30px 40px;
+  border-top: 1px solid #e0e5de;
 }
-.section-heading { align-items: end; }
-.section-view { padding-bottom: 7px; border-bottom: 1px solid #a65b3f; color: #78432f; font-size: 12px; white-space: nowrap; }
-.section-view:hover { color: #20372f; }
-.poetry-archive .section-heading .section-view { margin-left: auto; }
-.poetry-archive .section-heading .add-poem-button { margin-left: 18px; }
-.poetry-band { width: min(100%, 1440px); margin-inline: auto; }
-.about { width: min(100%, 1440px); margin-inline: auto; }
+.journal-stream>.latest { background: #f5f6f1; }
+.journal-stream>.poetry-archive { background: #fffefa; }
+.journal-stream>.reflections-archive { background: #f1f4ee; }
+.journal-stream .section-heading { display: block; }
+.journal-stream .section-heading h2 { margin-top: 13px; font-size: clamp(28px, 3vw, 37px); }
+.journal-stream .section-view { display: inline-block; margin-top: 15px; padding-bottom: 4px; font-size: 10px; }
+.journal-stream .poetry-archive .section-heading .add-poem-button { display: inline-block; margin: 12px 0 0 13px; padding: 8px 10px; font-size: 9px; }
+.journal-stream .writing-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 22px 15px; padding-top: 23px; }
+.journal-stream .card-art { height: 135px; }
+.journal-stream .card-info { padding: 13px 13px 14px; }
+.journal-stream .card-info h3 { font-size: 18px; }
+.journal-stream .card-info p { font-size: 12px; line-height: 1.6; }
+.journal-stream .card-footer { font-size: 8px; }
+.journal-stream>.poetry-band { width: auto; margin: 0; padding: 34px 30px 38px; }
+.journal-stream .poetry-inner { display: block; }
+.journal-stream .poetry-side>p { margin: 18px 0; font-size: 20px; }
+.journal-stream .poetry-side>p br { display: none; }
+.journal-stream .poetry-side>p span { margin-left: 5px; }
+.journal-stream .poem { padding: 17px 0 0; border-top: 1px solid #536b5f; border-left: 0; }
+.journal-stream .poem h2 { font-size: 30px; }
+.journal-stream .poem-lines { font-size: 15px; line-height: 1.75; }
+.journal-stream .poetry-mark { position: absolute; top: 30px; right: 28px; font-size: 92px; }
+
+.issue-rail-heading { display: flex; justify-content: space-between; padding-bottom: 14px; border-bottom: 1px solid #d8ded8; }
+.issue-rail-heading span:last-child { color: #a65b3f; }
+.latest-list { display: grid; }
+.latest-item { display: block; padding: 14px 0; border-bottom: 1px solid #d8ded8; }
+.latest-item .latest-category { display: block; margin-bottom: 6px; color: #a65b3f; font-size: 8px; letter-spacing: .1em; text-transform: uppercase; }
+.latest-item strong { display: block; color: #263e35; font: 500 15px/1.35 var(--serif); }
+.latest-item time { display: block; margin-top: 6px; color: #718078; font-size: 9px; }
+.latest-item:hover strong { color: #9b5138; }
+.issue-card { margin-top: 26px; padding: 17px; background: #eef2ec; }
+.issue-card .eyebrow { font-size: 8px; letter-spacing: .12em; }
+.issue-card p { color: #41594e; font: 13px/1.6 var(--serif); }
+.issue-card a { color: #804832; font-size: 10px; }
+.publish-link { display: flex; justify-content: space-between; margin-top: 18px; padding: 12px 0; border-bottom: 1px solid #d8ded8; color: #314a3f; font-size: 11px; }
+.publish-link span { color: #a65b3f; }
+.about { width: min(100%, 1200px); margin: 0 auto; }
 .newsletter { border-block: 1px solid #ded9cd; }
 .site-footer { padding-inline: max(8%, calc((100% - 1200px) / 2)); }
 
-@media (max-width: 850px) {
-  .hero { min-height: 0; padding: 60px 7% 76px; }
-  .hero-art { height: 390px; }
-  .journal-index { width: 86%; }
-  .journal-index>a { padding-inline: 14px; column-gap: 9px; }
-  .index-count { font-size: 7px; }
-  .featured { padding-inline: 8%; }
+@media (max-width: 1120px) {
+  .journal-layout { grid-template-columns: 160px minmax(0,1fr); }
+  .issue-rail { position: static; grid-column: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 28px; padding-top: 24px; border-top: 1px solid #d8ded8; }
+  .issue-rail-heading { grid-column: 1 / -1; margin-bottom: 0; }
+  .latest-list { grid-column: 1; grid-row: 2 / span 2; }
+  .issue-card { margin-top: 0; align-self: start; }
+  .publish-link { align-self: start; margin-top: 0; }
 }
-@media (max-width: 680px) {
-  .hero { padding: 52px 6% 58px; }
-  .hero-art { width: calc(100% - 10px); height: clamp(320px, 88vw, 410px); }
-  .cover-caption { gap: 12px; }
-  .cover-caption strong { font-size: 17px; }
-  .cover-caption .cover-index { font-size: 6px; }
-  .journal-index { width: 100%; grid-template-columns: 1fr; border-bottom: 0; }
-  .journal-index>a { min-height: 74px; padding: 12px 7%; grid-template-columns: 30px 1fr auto; }
-  .journal-index>a+a { border-left: 0; border-top: 1px solid #d9dfd8; }
-  .index-title { font-size: 18px; }
-  .index-note { font-size: 10px; }
-  .featured { padding: 68px 6% 76px; }
-  .feature-grid { grid-template-columns: 1fr; gap: 26px; }
-  .feature-art { min-height: 0; height: 250px; }
-  .section-heading { align-items: flex-end; }
-  .section-view { font-size: 10px; }
-  .poetry-archive .section-heading { display: grid; grid-template-columns: 1fr auto; }
-  .poetry-archive .section-heading>div:first-child { grid-column: 1 / -1; }
-  .poetry-archive .section-heading .section-view { grid-column: 1; grid-row: 2; margin: 5px 0 0; justify-self: start; }
-  .poetry-archive .section-heading .add-poem-button { grid-column: 2; grid-row: 2; margin: 0; font-size: 10px; }
+@media (max-width: 780px) {
+  .hero { min-height: 0; padding: 52px 7% 64px; gap: 40px; }
+  .hero-art { height: clamp(310px, 74vw, 420px); }
+  .journal-layout { display: flex; flex-direction: column; gap: 22px; padding: 22px 6% 65px; }
+  .journal-rail { position: static; width: 100%; }
+  .rail-heading { margin-bottom: 10px; }
+  .rail-nav { display: flex; overflow-x: auto; border: 1px solid #d8ded8; background: #fffefa; scrollbar-width: thin; }
+  .rail-nav a { flex: 0 0 auto; gap: 7px; padding: 13px 14px; border: 0; font-size: 11px; }
+  .rail-nav a+a { border-left: 1px solid #d8ded8; }
+  .rail-nav a:hover { padding-left: 14px; }
+  .rail-nav small { display: none; }
+  .rail-note, .rail-readlist { display: none; }
+  .journal-stream { width: 100%; }
+  .issue-rail { display: block; width: 100%; }
+  .latest-list { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); column-gap: 20px; }
+  .issue-card { margin-top: 18px; }
+  .publish-link { margin-top: 13px; }
 }
-@media (max-width: 380px) {
-  .cover-caption>span:first-child { width: 56px; font-size: 7px; }
-  .cover-caption .cover-index { max-width: 83px; line-height: 1.4; }
-  .section-heading { align-items: flex-start; }
-  .section-view { margin-top: 8px; }
+@media (max-width: 600px) {
+  .hero { padding: 44px 6% 55px; gap: 32px; }
+  .hero h1 { font-size: clamp(43px, 11.5vw, 60px); }
+  .hero-intro { font-size: 15px; }
+  .hero-art { width: calc(100% - 10px); height: clamp(290px, 82vw, 370px); }
+  .hero-art-caption { left: 11px; right: 11px; bottom: 10px; font-size: 7px; }
+  .journal-stream>.featured { padding: 25px 20px 30px; }
+  .journal-stream>.featured .feature-grid { grid-template-columns: 1fr; }
+  .journal-stream>.featured .feature-art { height: 205px; }
+  .journal-stream>.featured .feature-copy h2 { font-size: 34px; }
+  .journal-stream>.archive-section { padding: 27px 20px 31px; }
+  .journal-stream .writing-grid { grid-template-columns: 1fr; gap: 13px; }
+  .journal-stream .writing-card { grid-template-columns: 100px minmax(0,1fr); }
+  .journal-stream .card-art { height: 100%; min-height: 150px; border-right: 1px solid #e0e5de; border-bottom: 0; }
+  .journal-stream .card-info { padding: 13px; }
+  .journal-stream .card-info h3 { font-size: 17px; }
+  .journal-stream .card-info p { font-size: 11px; }
+  .journal-stream .card-footer { font-size: 7px; }
+  .journal-stream>.poetry-band { padding: 28px 20px 32px; }
+  .journal-stream .poetry-mark { top: 23px; right: 17px; }
+  .latest-list { grid-template-columns: 1fr; }
 }

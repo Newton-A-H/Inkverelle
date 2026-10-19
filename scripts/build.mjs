@@ -27,6 +27,9 @@ const cardsByCategory = Object.fromEntries(['stories', 'poetry', 'reflections'].
   posts.filter(post => post.category === category).map((post, index) => card(post, index)).join('') || `<p class="archive-empty">New ${category} will be here soon.</p>`
 ]));
 const countsByCategory = Object.fromEntries(['stories', 'poetry', 'reflections'].map(category => [category, posts.filter(post => post.category === category).length]));
+const latestList = [...posts].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5).map(post =>
+  `<a class="latest-item" href="${url(`${post.slug}/`)}"><span class="latest-category">${escapeHTML(capitalize(post.category))}</span><strong>${escapeHTML(post.title)}</strong><time datetime="${escapeAttribute(post.date)}">${formatDate(post.date)}</time></a>`
+).join('');
 const homePath = path.join(root, 'index.html');
 let home = fs.readFileSync(homePath, 'utf8');
 const featured = posts.find(post => post.slug === site.featuredSlug) || posts[0];
@@ -40,6 +43,8 @@ home = home
   .replace('{{STORY_COUNT}}', String(countsByCategory.stories))
   .replace('{{POETRY_COUNT}}', String(countsByCategory.poetry))
   .replace('{{REFLECTION_COUNT}}', String(countsByCategory.reflections))
+  .replace('{{LATEST_LIST}}', latestList)
+  .replace('{{ABOUT_SHORT}}', escapeHTML((site.aboutParagraphs?.[0] || 'A literary home for poems, stories, and reflections.').slice(0, 220)))
   .replace('{{ABOUT_HEADING}}', escapeHTML(site.aboutHeading || 'About Inkverelle'))
   .replace('{{ABOUT_PARAGRAPHS}}', (site.aboutParagraphs || []).map(text => `<p>${escapeHTML(text)}</p>`).join(''))
   .replace('href="admin/"', `href="${url('admin/')}"`)
