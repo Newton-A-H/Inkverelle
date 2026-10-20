@@ -3,7 +3,7 @@ title: "The Battlefield’s Silence"
 slug: the-battlefields-silence
 category: poetry
 date: 2026-10-20
-excerpt: "A meditation on grief after war, and the hope that begins to grow in its quiet aftermath."
+excerpt: "A poem for those lost to war, and for the hope that comes after."
 readingTime: "1 min read"
 poem: true
 tags: ["peace", "hope", "war"]

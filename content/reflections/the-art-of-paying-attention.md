@@ -3,7 +3,7 @@ title: "The art of paying attention"
 slug: the-art-of-paying-attention
 category: reflections
 date: 2026-10-12
-excerpt: "On noticing what the day leaves at your doorstep: light on the kitchen floor, the neighbor’s lavender, a thought that finally found its way home."
+excerpt: "A reflection on the small things that can change a day: light on the floor, a neighbor’s lavender, a thought you’ve been carrying."
 readingTime: "6 min read"
 poem: false
 tags: []

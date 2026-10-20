@@ -3,7 +3,7 @@ title: "The letter I wrote to August"
 slug: letter-to-august
 category: reflections
 date: 2026-09-19
-excerpt: "A small reckoning with the season that always asks more of us than we planned to give."
+excerpt: "A letter to August about what changed, what hurt, and what the month left behind."
 readingTime: "5 min read"
 poem: false
 tags: []

@@ -1,6 +1,6 @@
 # Inkverelle
 
-Inkverelle is a responsive literary journal for poetry, stories, and reflections. Its content is stored as Markdown in this repository; a small Node build script generates a static site for GitHub Pages. No database, paid service, or build dependency is required.
+Inkverelle is a responsive journal for poems, stories, and reflections. The writing lives in this repository as Markdown files. A small Node script turns them into the site. There’s no database or paid service to set up.
 
 ## Publish with GitHub Pages
 
@@ -12,7 +12,7 @@ For a public site, GitHub Pages is available on GitHub Free when the repository 
 
 ## Add or edit writing
 
-Create a `.md` file in `content/poetry/`, `content/stories/`, or `content/reflections/`. Copy this front matter, then write your article below the second `---` line:
+Add a `.md` file to `content/poetry/`, `content/stories/`, or `content/reflections/`. Copy this example, fill in your details, and put the writing below the second `---` line:
 
 ```yaml
 ---
@@ -20,7 +20,7 @@ title: "A new poem"
 slug: a-new-poem
 category: poetry
 date: 2026-10-19
-excerpt: "A short introduction for the archive."
+excerpt: "A few words about this poem."
 readingTime: "3 min read"
 poem: true
 tags: ["memory", "home"]
@@ -31,9 +31,9 @@ Write one line per verse.
 Leave a blank line between stanzas.
 ```
 
-Set `poem: true` for poems. For unpublished work, set `status: draft`; drafts are excluded from the generated site. On a public source repository, draft files are still visible in the repository, so do not put private writing there. Push or merge the file to `main` to publish it. GitHub keeps the revision history and lets you restore earlier edits.
+For a poem, set `poem: true` so its lines and stanzas stay in place. To keep a piece off the site, set `status: draft`. If this repository is public, the draft file can still be seen on GitHub, so don’t put private writing here. Merge the file into `main` to publish it. GitHub keeps earlier versions if you ever need to restore an edit.
 
-Edit `content/site.json` to update the site name, tagline, about copy, contact email, social links, and featured article. The homepage search and RSS feed are generated from published writing. Readers can save an article to a reading list stored in their browser on that device; these saves do not sync across browsers or devices. Real newsletter subscriptions, private editor login, and form-delivered email need a separate service; this static site does not pretend to provide those.
+Edit `content/site.json` to change the site name, tagline, About text, contact email, social links, or featured piece. Search and the RSS feed include published writing. A reader’s saved list stays in their browser and doesn’t sync to other devices. The site doesn’t include a newsletter signup, private editor login, or inbox for contact messages; those need an additional service.
 
 ## Preview locally
 

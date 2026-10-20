@@ -26,7 +26,7 @@ contactForm?.addEventListener('submit', event => {
   const subject = `Inkverelle message from ${name}`;
   const body = `Name: ${name}\nReply email: ${reply}\n\n${message}`;
   const status = document.querySelector('#contact-form-status');
-  if (status) status.textContent = 'Opening your email app with your message. Review it there, then choose Send.';
+  if (status) status.textContent = 'Your email app is opening with the message ready. Review it there and send when you’re ready.';
   window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 });
 
@@ -73,21 +73,21 @@ function renderReadingList() {
   if (!readingListItems || !readingListStatus) return;
   readingListItems.replaceChildren();
   if (!storageAvailable) {
-    readingListStatus.textContent = 'This browser is blocking local storage, so your reading list cannot be saved here.';
+    readingListStatus.textContent = 'Your browser isn’t allowing this reading list to be saved.';
     return;
   }
   const entries = getSavedSlugs()
     .map(slug => searchIndex.find(item => item.slug === slug))
     .filter(Boolean);
   if (!searchIndex.length) {
-    readingListStatus.textContent = 'Loading your saved writing…';
+    readingListStatus.textContent = 'Loading your reading list…';
     return;
   }
   if (!entries.length) {
-    readingListStatus.textContent = 'Your reading list is empty. Save a poem, story, or reflection to keep it here.';
+    readingListStatus.textContent = 'Nothing saved yet. Use “Save for later” on a poem, story, or reflection to add it here.';
     return;
   }
-  readingListStatus.textContent = `${entries.length} ${entries.length === 1 ? 'piece' : 'pieces'} saved on this device.`;
+  readingListStatus.textContent = `${entries.length} ${entries.length === 1 ? 'piece' : 'pieces'} saved in this browser.`;
   for (const entry of entries) {
     const article = document.createElement('article');
     article.className = 'saved-piece';
@@ -119,7 +119,7 @@ document.addEventListener('click', event => {
     const slug = bookmark.dataset.bookmarkSlug;
     const saved = getSavedSlugs();
     writeSavedSlugs(saved.includes(slug) ? saved.filter(item => item !== slug) : [...saved, slug]);
-    if (readingListStatus && !storageAvailable) readingListStatus.textContent = 'This browser is blocking local storage, so the piece could not be saved.';
+    if (readingListStatus && !storageAvailable) readingListStatus.textContent = 'Your browser isn’t allowing this piece to be saved.';
     return;
   }
   const remove = event.target.closest('[data-remove-slug]');
@@ -132,7 +132,7 @@ document.querySelectorAll('.copy-link').forEach(button => button.addEventListene
     await navigator.clipboard.writeText(button.dataset.copyUrl || location.href);
     button.textContent = 'Link copied';
   } catch {
-    button.textContent = 'Copy unavailable';
+    button.textContent = 'Couldn’t copy the link';
   }
   window.setTimeout(() => { button.textContent = original; }, 1800);
 }));
@@ -142,14 +142,14 @@ function renderSearchResults() {
   const query = searchInput.value.trim().toLocaleLowerCase();
   searchResults.replaceChildren();
   if (!query) {
-    searchResults.textContent = 'Search titles, poems, stories, and reflections.';
+    searchResults.textContent = 'Search by title or try a word from the piece.';
     return;
   }
   const matches = searchIndex.filter(item =>
     [item.title, item.category, item.excerpt, ...(item.tags || [])].join(' ').toLocaleLowerCase().includes(query)
   ).slice(0, 30);
   if (!matches.length) {
-    searchResults.textContent = 'No writing found. Try another word.';
+    searchResults.textContent = 'Nothing came up. Try another word.';
     return;
   }
   for (const item of matches) {
@@ -177,8 +177,8 @@ fetch('search-index.json')
     renderSearchResults();
   })
   .catch(() => {
-    if (searchResults) searchResults.textContent = 'Search is unavailable right now.';
-    if (readingListStatus) readingListStatus.textContent = 'Your saved writing could not be loaded right now.';
+    if (searchResults) searchResults.textContent = 'Search isn’t available right now.';
+    if (readingListStatus) readingListStatus.textContent = 'Your reading list couldn’t be loaded. Try again in a moment.';
   });
 
 document.querySelector('.search-open')?.addEventListener('click', () => {

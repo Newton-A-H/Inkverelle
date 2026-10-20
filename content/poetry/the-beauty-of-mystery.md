@@ -3,7 +3,7 @@ title: "The Beauty of Mystery"
 slug: the-beauty-of-mystery
 category: poetry
 date: 2026-10-19
-excerpt: "A quiet portrait of someone who keeps his heart guarded, and the beauty in taking time to know him."
+excerpt: "A man keeps to himself, and the poem wonders what it takes to know him."
 readingTime: "1 min read"
 poem: true
 tags: []

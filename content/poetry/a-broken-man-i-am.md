@@ -3,7 +3,7 @@ title: "A Broken Man I Am"
 slug: a-broken-man-i-am
 category: poetry
 date: 2026-10-20
-excerpt: "A poem about finding the will to rise and the light that can enter through broken places."
+excerpt: "A man looks at what he has lost and finds a reason to rise again."
 readingTime: "1 min read"
 poem: true
 tags: ["resilience", "hope", "healing"]

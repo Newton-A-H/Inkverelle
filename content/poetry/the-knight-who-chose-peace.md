@@ -3,7 +3,7 @@ title: "The Knight Who Chose Peace"
 slug: the-knight-who-chose-peace
 category: poetry
 date: 2026-10-19
-excerpt: "An original poem about a man who learned that sometimes the bravest thing a heart can do is lay down its sword."
+excerpt: "A knight grows tired of war and begins to wonder what peace might ask of him."
 readingTime: "14 min read"
 poem: true
 tags: []

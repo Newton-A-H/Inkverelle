@@ -3,7 +3,7 @@ title: "The Cost of Kindness"
 slug: the-cost-of-kindness
 category: poetry
 date: 2026-10-20
-excerpt: "A poem about the quiet strain of remaining tender in a world that rewards hardness."
+excerpt: "A poem about trying to stay kind when the world keeps asking more of you."
 readingTime: "1 min read"
 poem: true
 tags: ["kindness", "hope"]

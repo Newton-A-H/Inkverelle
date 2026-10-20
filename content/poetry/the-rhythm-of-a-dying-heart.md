@@ -3,7 +3,7 @@ title: "The Rhythm of a Dying Heart"
 slug: the-rhythm-of-a-dying-heart
 category: poetry
 date: 2026-10-20
-excerpt: "A poem about heartbreak, endurance, and the possibility of beginning again."
+excerpt: "A heart moves through grief and finds that an ending can leave room for a new beginning."
 readingTime: "2 min read"
 poem: true
 tags: ["heartbreak", "resilience", "hope"]

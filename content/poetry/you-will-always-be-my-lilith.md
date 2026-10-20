@@ -3,7 +3,7 @@ title: "You Will Always Be My Lilith"
 slug: you-will-always-be-my-lilith
 category: poetry
 date: 2026-10-20
-excerpt: "A tender message of friendship, courage, and staying beside someone through fear."
+excerpt: "A message to Shaliey: you don’t have to face the hard days alone."
 readingTime: "1 min read"
 poem: true
 tags: ["friendship", "courage", "hope"]

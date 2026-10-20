@@ -3,7 +3,7 @@ title: "The Silhouette of a Broken Man"
 slug: the-silhouette-of-a-broken-man
 category: poetry
 date: 2026-10-20
-excerpt: "A portrait of a man moving through grief, isolation, and a small possibility of renewal."
+excerpt: "A lonely man looks for a reason to keep going."
 readingTime: "1 min read"
 poem: true
 tags: ["grief", "resilience", "hope"]
