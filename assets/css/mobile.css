@@ -93,6 +93,17 @@
   .collection-page .card-info h3 { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; margin: 6px 0; font-size: 16px; line-height: 1.25; }
   .collection-page .card-info p { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; margin: 6px 0; font-size: 10px; line-height: 1.45; }
   .collection-page .card-footer { gap: 6px; margin-top: 8px; padding-top: 7px; font-size: 7px; }
+  .related-section { padding-top: 34px; padding-bottom: 42px; }
+  .related-section h2 { margin: 8px 0 14px; font-size: 27px; }
+  .related-section .writing-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; padding-top: 0; }
+  .related-section .writing-card { display: block; min-width: 0; }
+  .related-section .writing-card-link { display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: stretch; height: 100%; }
+  .related-section .card-art { height: auto; min-height: 148px; border: 0; border-right: 1px solid #e0e5de; }
+  .related-section .card-info { min-width: 0; padding: 12px 12px 11px; }
+  .related-section .card-date { font-size: 7px; }
+  .related-section .card-info h3 { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; margin: 6px 0; color: #20372f; font-size: 16px; line-height: 1.25; }
+  .related-section .card-info p { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; margin: 6px 0; font-size: 10px; line-height: 1.45; }
+  .related-section .card-footer { gap: 6px; margin-top: 8px; padding-top: 7px; font-size: 7px; }
   .static-page>p:not(.eyebrow), .static-page li { font-size: 15px; line-height: 1.7; }
   .publishing-guide ol { padding-left: 20px; }
   .publishing-guide li { margin: 12px 0; }
@@ -125,5 +136,9 @@
   .collection-page .card-art { min-height: 146px; }
   .collection-page .card-info { padding-inline: 10px; }
   .collection-page .card-info h3 { font-size: 15px; }
+  .related-section .writing-card-link { grid-template-columns: 84px minmax(0, 1fr); }
+  .related-section .card-art { min-height: 142px; }
+  .related-section .card-info { padding-inline: 10px; }
+  .related-section .card-info h3 { font-size: 15px; }
   .contact-box-details, .contact-form { padding-inline: 15px; }
 }
