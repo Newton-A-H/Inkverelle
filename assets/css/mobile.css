@@ -1,0 +1,115 @@
+/* Small-screen refinements. These rules stay below the desktop breakpoint. */
+@media (max-width: 760px) {
+  html { scroll-padding-top: 76px; }
+  .site-header {
+    height: 68px;
+    padding-inline: clamp(16px, 5vw, 28px);
+    gap: 14px;
+  }
+  .wordmark { width: clamp(160px, 45vw, 190px); height: 52px; }
+  .site-nav { top: 68px; }
+  .site-nav.open {
+    max-height: calc(100dvh - 68px);
+    overflow-y: auto;
+    padding: 18px 6% 24px;
+  }
+  .site-nav .nav-link { min-height: 36px; display: flex; align-items: center; font-size: 13px; }
+  .search-open { width: 44px; height: 44px; }
+  .journal-layout { gap: 18px; }
+  .journal-rail { overflow: hidden; }
+  .rail-nav { overscroll-behavior-x: contain; scrollbar-width: none; }
+  .rail-nav::-webkit-scrollbar { display: none; }
+  .rail-nav a { min-height: 44px; padding-inline: 12px; }
+  .journal-stream { border-radius: 3px; overflow: hidden; }
+  .journal-stream .writing-card { height: auto; }
+  .journal-stream .writing-card-link {
+    display: grid;
+    grid-template-columns: minmax(92px, .36fr) minmax(0, .64fr);
+    align-items: stretch;
+    height: 100%;
+  }
+  .journal-stream .card-art { height: auto; min-height: 150px; }
+  .journal-stream .card-info { min-width: 0; padding: 14px clamp(12px, 4vw, 18px); }
+  .journal-stream .card-info h3 { line-height: 1.3; overflow-wrap: anywhere; }
+  .journal-stream .card-info p { line-height: 1.55; }
+  .journal-stream .card-footer { flex-wrap: wrap; row-gap: 7px; }
+  .issue-rail { padding-top: 22px; }
+  .latest-item { min-height: 72px; }
+  .contact-strip { max-width: 560px; }
+  .contact-box { width: 100%; }
+  .footer-bottom { align-items: flex-start; }
+  .footer-bottom div { width: 100%; gap: 12px 18px; }
+  .footer-social { flex-wrap: wrap; gap: 10px 14px; }
+  .footer-social a { white-space: normal; }
+}
+
+@media (max-width: 600px) {
+  .hero { padding: 42px 6% 52px; gap: 27px; }
+  .hero h1 { max-width: 12ch; font-size: clamp(39px, 10.5vw, 54px); line-height: 1.08; letter-spacing: -.04em; }
+  .hero-intro { max-width: 38ch; font-size: 15px; line-height: 1.7; }
+  .hero-art { width: calc(100% - 8px); height: clamp(230px, 68vw, 330px); }
+  .journal-layout { padding: 17px 4.5% 46px; gap: 16px; }
+  .rail-heading { padding-inline: 2px; font-size: 9px; }
+  .rail-nav { width: 100%; }
+  .rail-nav a { gap: 6px; padding-inline: 11px; font-size: 10px; }
+  .journal-stream>.featured { padding: 23px 17px 27px; }
+  .journal-stream>.featured .section-label { margin-bottom: 16px; }
+  .journal-stream>.featured .feature-art { height: clamp(170px, 50vw, 220px); min-height: 0; }
+  .journal-stream>.featured .feature-copy h2 { font-size: clamp(29px, 8vw, 36px); }
+  .journal-stream>.archive-section { padding: 24px 15px 27px; }
+  .journal-stream .writing-grid { gap: 11px; }
+  .journal-stream .writing-card-link { grid-template-columns: minmax(82px, .34fr) minmax(0, .66fr); }
+  .journal-stream .card-art { min-height: 138px; }
+  .journal-stream .card-info { padding: 12px 11px; }
+  .journal-stream .card-date { font-size: 8px; }
+  .journal-stream .card-info h3 { font-size: 16px; }
+  .journal-stream .card-info p { font-size: 11px; }
+  .journal-stream .card-footer { font-size: 7px; }
+  .journal-stream>.poetry-band { padding: 25px 17px 28px; }
+  .journal-stream .poem h2 { max-width: 12ch; font-size: 28px; }
+  .journal-stream .poem-lines { font-size: 14px; }
+  .issue-rail { padding-top: 18px; }
+  .latest-list { grid-template-columns: 1fr; }
+  .contact-strip { width: 90%; gap: 13px; padding-block: 24px; }
+  .contact-strip-email { font-size: 14px; }
+  .contact-box { margin-top: 28px; }
+  .contact-box-details, .contact-form { padding: 23px 20px; }
+  .contact-form { gap: 14px; }
+  .contact-form input { min-height: 46px; }
+  .contact-form textarea { min-height: 140px; }
+  .contact-submit { min-height: 46px; }
+  .about { gap: 27px; }
+  .site-footer { padding: 24px 6% 18px; }
+  .footer-top { align-items: flex-start; gap: 8px 14px; }
+  .footer-top .wordmark { width: min(190px, 58vw); height: 52px; }
+  .footer-top p { flex-basis: 100%; order: 3; margin: 4px 0 0; }
+  .footer-bottom { gap: 12px; font-size: 10px; }
+  .footer-social { align-items: flex-start; }
+  .article-page { padding: 44px 20px 58px; }
+  .back-link { margin-bottom: 27px; }
+  .reading-column h1 { font-size: clamp(36px, 10vw, 48px); letter-spacing: -.04em; }
+  .article-subtitle { font-size: 17px; }
+  .article-body { font-size: 17px; line-height: 1.85; }
+  .article-body.poetry-body { font-size: 17px; line-height: 1.85; }
+  .article-actions { align-items: stretch; gap: 9px 15px; }
+  .bookmark-toggle { min-height: 42px; }
+  .collection-page, .static-page { padding-top: 50px; padding-bottom: 60px; }
+  .static-page>p:not(.eyebrow), .static-page li { font-size: 16px; line-height: 1.75; }
+  .publishing-guide ol { padding-left: 20px; }
+  .publishing-guide li { padding-left: 3px; margin: 14px 0; }
+  .publishing-guide pre { padding: 16px 13px; font-size: 11px; }
+  .search-dialog { padding: 42px 18px 26px; }
+  .search-box input { font-size: 17px; }
+}
+
+@media (max-width: 360px) {
+  .wordmark { width: 154px; }
+  .hero h1 { font-size: 37px; }
+  .journal-layout { padding-inline: 12px; }
+  .rail-nav a { padding-inline: 9px; }
+  .journal-stream>.archive-section { padding-inline: 12px; }
+  .journal-stream .writing-card-link { grid-template-columns: 78px minmax(0, 1fr); }
+  .journal-stream .card-info { padding-inline: 9px; }
+  .journal-stream .card-info h3 { font-size: 15px; }
+  .contact-box-details, .contact-form { padding-inline: 16px; }
+}
