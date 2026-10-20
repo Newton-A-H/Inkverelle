@@ -33,7 +33,7 @@ Leave a blank line between stanzas.
 
 For a poem, set `poem: true` so its lines and stanzas stay in place. To keep a piece off the site, set `status: draft`. If this repository is public, the draft file can still be seen on GitHub, so don’t put private writing here. Merge the file into `main` to publish it. GitHub keeps earlier versions if you ever need to restore an edit.
 
-Edit `content/site.json` to change the site name, tagline, About text, contact email, social links, or featured piece. Search and the RSS feed include published writing. A reader’s saved list stays in their browser and doesn’t sync to other devices. The site doesn’t include a newsletter signup, private editor login, or inbox for contact messages; those need an additional service.
+Edit `content/site.json` to change the site name, tagline, About text, contact email, social links, or featured piece. Search includes published writing. A reader’s saved list stays in their browser and doesn’t sync to other devices. The site doesn’t include a newsletter signup, private editor login, or inbox for contact messages; those need an additional service.
 
 ## Preview locally
 
@@ -50,7 +50,7 @@ cd dist
 python -m http.server 8000
 ```
 
-Then visit `http://localhost:8000`. The build also creates article pages, story/poetry/reflection archives, tag and category pages, About, Contact, search, a local reading list, a 404 page, `sitemap.xml`, `robots.txt`, and `feed.xml`.
+Then visit `http://localhost:8000`. The build also creates article pages, story/poetry/reflection archives, tag and category pages, About, Contact, search, a local reading list, a 404 page, `sitemap.xml`, and `robots.txt`.
 
 ## Project layout
 
