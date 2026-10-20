@@ -25,9 +25,9 @@
   .journal-stream>.featured .feature-excerpt { margin: 8px 0 11px; font-size: 13px; line-height: 1.55; }
   .journal-stream>.featured .article-meta { margin: 8px 0; font-size: 9px; }
   .journal-stream>.archive-section { padding: 21px 14px 22px; }
-  .journal-stream .section-heading { display: block; }
-  .journal-stream .section-heading h2 { margin: 7px 0 0; font-size: 28px; }
-  .journal-stream .section-view { margin-top: 7px; }
+  .journal-stream .section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }
+  .journal-stream .section-heading h2 { margin: 7px 0 0; font-size: 28px; line-height: 1.05; }
+  .journal-stream .section-view { flex: 0 0 auto; margin: 0 0 2px; font-size: 9px; white-space: nowrap; }
   .journal-stream .writing-grid {
     display: grid;
     grid-auto-flow: column;
