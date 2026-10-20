@@ -15,6 +15,21 @@ siteNav?.querySelectorAll('a').forEach(link => link.addEventListener('click', ()
 const year = document.querySelector('#year');
 if (year) year.textContent = String(new Date().getFullYear());
 
+const contactForm = document.querySelector('#contact-form');
+contactForm?.addEventListener('submit', event => {
+  event.preventDefault();
+  const fields = new FormData(contactForm);
+  const recipient = contactForm.dataset.contactEmail;
+  const name = String(fields.get('name') || '').trim();
+  const reply = String(fields.get('reply') || '').trim();
+  const message = String(fields.get('message') || '').trim();
+  const subject = `Inkverelle message from ${name}`;
+  const body = `Name: ${name}\nReply email: ${reply}\n\n${message}`;
+  const status = document.querySelector('#contact-form-status');
+  if (status) status.textContent = 'Opening your email app with your message. Review it there, then choose Send.';
+  window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+});
+
 const searchDialog = document.querySelector('#search-dialog');
 const searchInput = document.querySelector('#search-input');
 const searchResults = document.querySelector('#search-results');
