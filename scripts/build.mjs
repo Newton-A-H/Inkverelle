@@ -171,7 +171,7 @@ function renderParagraph(text) {
   if (text.startsWith('> ')) return `<blockquote>${escapeHTML(text.slice(2))}</blockquote>`;
   return `<p>${renderInline(text).replace(/\r?\n/g, '<br>')}</p>`;
 }
-function renderInline(text) { return escapeHTML(text).replace(/\*([^*]+)\*/g, '<em>$1</em>'); }
+function renderInline(text) { return escapeHTML(text).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/\*([^*]+)\*/g, '<em>$1</em>'); }
 function card(post, index = 0) {
   const art = `art-${index % 6 + 1}`;
   return `<article class="writing-card"><a class="writing-card-link" href="${url(`${post.slug}/`)}" aria-label="Read ${escapeAttribute(post.title)}"><div class="card-art ${art}"><span class="art-tag">${escapeHTML(capitalize(post.category))}</span></div><div class="card-info"><span class="card-date">${formatDate(post.date)}</span><h3>${escapeHTML(post.title)}</h3><p>${escapeHTML(post.excerpt)}</p><div class="card-footer"><span>${escapeHTML(post.read)}</span><span>READ ↗</span></div></div></a></article>`;
