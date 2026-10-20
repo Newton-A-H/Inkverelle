@@ -185,7 +185,11 @@ function writePage(route, title, description, content, options = {}) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   const footerMarker = `</div><span>Made with care, in ${escapeHTML(site.authorLocation || 'Nairobi')}.</span></div></footer>`;
   const footerWithSocials = `</div>${footerSocialLinks}<span>Made with care, in ${escapeHTML(site.authorLocation || 'Nairobi')}.</span></div></footer>`;
-  fs.writeFileSync(file, renderLayout(route, title, description, content, options).replace(footerMarker, footerWithSocials));
+  const html = renderLayout(route, title, description, content, options)
+    .replace(footerMarker, footerWithSocials)
+    .replaceAll('inkverelle-wordmark.png', 'inkverelle-wordmark-transparent.png')
+    .replaceAll('assets/css/wireframe.css', 'assets/css/wireframe.css?v=20261020-footer-green');
+  fs.writeFileSync(file, html);
 }
 function publishingGuide(repoUrl) {
   const editLink = repoUrl ? `${repoUrl}/tree/main/content` : 'https://github.com/';

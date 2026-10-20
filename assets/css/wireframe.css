@@ -160,9 +160,10 @@
 .footer-social a { color: #52645e; font-size: 10px; white-space: nowrap; }
 .footer-social a+a { padding-left: 14px; border-left: 1px solid #d8ded8; }
 .footer-social a:hover { color: #a65b3f; }
-.site-footer { background: #203b31; color: #f7f5ec; }
+.site-footer { background: #203b31 !important; color: #f7f5ec; }
 .site-footer .footer-top { border-color: #536b5f; }
-.site-footer .footer-top .wordmark { background: #f6f1e6; border-radius: 2px; }
+.site-footer .footer-top .wordmark { background: transparent; border-radius: 0; }
+.site-footer .footer-top .wordmark img { filter: brightness(0) invert(1); }
 .site-footer .footer-top p, .site-footer .back-top, .site-footer .footer-bottom { color: #d6dfd8; }
 .site-footer .footer-bottom a, .site-footer .footer-social a { color: #e8eee8; }
 .site-footer .footer-social a+a { border-color: #536b5f; }
