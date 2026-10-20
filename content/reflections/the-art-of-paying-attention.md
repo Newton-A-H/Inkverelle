@@ -7,7 +7,7 @@ excerpt: "A reflection on the small things that can change a day: light on the f
 readingTime: "6 min read"
 poem: false
 tags: []
-status: published
+status: draft
 ---
 
 There is a particular kind of quiet that arrives just before the day gets going. The kettle has not yet begun its small argument with the stove. The light is finding its way across the kitchen, one pale inch at a time.

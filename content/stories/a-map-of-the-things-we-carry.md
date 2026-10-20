@@ -7,7 +7,7 @@ excerpt: "Mara kept every train ticket from the year she learned how to leave, t
 readingTime: "8 min read"
 poem: false
 tags: []
-status: published
+status: draft
 ---
 
 Mara kept the tickets in a blue tin that had once held tea. She kept them folded and flat, each one a small map of a departure she had made.

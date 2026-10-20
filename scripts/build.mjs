@@ -28,7 +28,7 @@ fs.cpSync(path.join(root, 'assets'), path.join(output, 'assets'), { recursive: t
 fs.writeFileSync(path.join(output, '.nojekyll'), '');
 
 const cardsByCategory = Object.fromEntries(['stories', 'poetry', 'reflections'].map(category => [category,
-  posts.filter(post => post.category === category).map((post, index) => card(post, index)).join('') || `<p class="archive-empty">No ${category} here yet. Check back soon.</p>`
+  posts.filter(post => post.category === category).map((post, index) => card(post, index)).join('') || `<p class="archive-empty">No ${category} here just yet.</p>`
 ]));
 const countsByCategory = Object.fromEntries(['stories', 'poetry', 'reflections'].map(category => [category, posts.filter(post => post.category === category).length]));
 const latestList = [...posts].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5).map(post =>
