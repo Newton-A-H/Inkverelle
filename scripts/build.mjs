@@ -6,8 +6,6 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const output = path.join(root, 'dist');
 const basePath = normalizeBase(process.env.SITE_BASE_PATH || '/');
 const siteUrl = (process.env.SITE_URL || 'http://localhost:8000').replace(/\/$/, '');
-const repository = process.env.GITHUB_REPOSITORY || '';
-const repositoryUrl = /^[-\w.]+\/[-\w.]+$/.test(repository) ? `https://github.com/${repository}` : '';
 const site = JSON.parse(fs.readFileSync(path.join(root, 'content/site.json'), 'utf8'));
 const facebookSearchUrl = site.facebookName
   ? `https://www.facebook.com/search/top/?q=${encodeURIComponent(site.facebookName)}`
@@ -17,7 +15,7 @@ const posts = loadPosts().filter(post => post.status === 'published' && post.dat
 if (!posts.length) throw new Error('No published writing found in content/');
 const duplicateSlugs = duplicates(posts.map(post => post.slug));
 if (duplicateSlugs.length) throw new Error(`Duplicate slugs: ${duplicateSlugs.join(', ')}`);
-const allRoutes = new Set(['', 'stories/', 'poetry/', 'reflections/', 'about/', 'contact/', 'search/', 'reading-list/', 'admin/', 'privacy/']);
+const allRoutes = new Set(['', 'stories/', 'poetry/', 'reflections/', 'about/', 'contact/', 'search/', 'reading-list/', 'privacy/']);
 for (const post of posts) allRoutes.add(`${post.slug}/`);
 for (const category of new Set(posts.map(post => post.category))) allRoutes.add(`category/${slugify(category)}/`);
 for (const tag of new Set(posts.flatMap(post => post.tags))) allRoutes.add(`tag/${slugify(tag)}/`);
@@ -54,7 +52,6 @@ home = home
   .replaceAll('{{FACEBOOK_URL}}', escapeAttribute(facebookSearchUrl))
   .replace('{{ABOUT_HEADING}}', escapeHTML(site.aboutHeading || 'About Inkverelle'))
   .replace('{{ABOUT_PARAGRAPHS}}', (site.aboutParagraphs || []).map(text => `<p>${escapeHTML(text)}</p>`).join(''))
-  .replace('href="admin/"', `href="${url('admin/')}"`)
   .replace('href="contact/"', `href="${url('contact/')}"`)
   .replace('href="reading-list/"', `href="${url('reading-list/')}"`)
   .replace('href="the-knight-who-chose-peace/"', `href="${url(featured.slug + '/')}"`)
@@ -117,7 +114,6 @@ const contactContent = site.contactEmail
 writePage('contact/', `Contact — ${site.name}`, `Get in touch with ${site.name}.`, contactContent);
 writePage('search/', `Search — ${site.name}`, `Search stories, poems, and reflections from ${site.name}.`, `<main class="section-wrap static-page search-page"><p class="eyebrow">SEARCH</p><h1>Find something to read</h1><label for="search-input">Search by title, poem, story, or phrase</label><input id="search-input" type="search" placeholder="Start typing…"><div id="search-results" class="search-results" role="status" aria-live="polite"></div></main>`);
 writePage('reading-list/', `Reading list — ${site.name}`, `Writing you have saved to read later.`, `<main class="section-wrap static-page reading-list-page"><p class="eyebrow">SAVED FOR LATER</p><h1>Reading list</h1><p>Anything you save will be kept in this browser.</p><p id="reading-list-status" class="reading-list-status" role="status" aria-live="polite">Loading your reading list…</p><div id="reading-list-items" class="reading-list-items"></div></main>`);
-writePage('admin/', `Publishing guide — ${site.name}`, `How to add writing to ${site.name}.`, publishingGuide(repositoryUrl));
 writePage('privacy/', `Privacy — ${site.name}`, `Privacy information for ${site.name}.`, `<main class="section-wrap static-page"><p class="eyebrow">YOUR PRIVACY</p><h1>Privacy</h1><p>You can read and search the writing without signing in. If you save something to your reading list, that list stays in this browser on this device and isn’t sent to Inkverelle.</p><p>The site uses Google Fonts to display its type. The contact form opens your email app; it doesn’t collect or send messages itself.</p></main>`);
 writePage('404.html', `Page not found — ${site.name}`, `The requested page could not be found.`, `<main class="section-wrap static-page"><p class="eyebrow">404</p><h1>We couldn’t find that page.</h1><p>Check the address or head back to the journal.</p><a class="text-link" href="${url('')}">Back to Inkverelle <span>↗</span></a></main>`);
 
@@ -191,11 +187,6 @@ function writePage(route, title, description, content, options = {}) {
     .replace(footerMarker, footerWithSocials)
     .replaceAll('assets/css/wireframe.css', 'assets/css/wireframe.css?v=20261020-footer-green');
   fs.writeFileSync(file, html);
-}
-function publishingGuide(repoUrl) {
-  const editLink = repoUrl ? `${repoUrl}/tree/main/content` : 'https://github.com/';
-  const example = `---\ntitle: "A new poem"\nslug: a-new-poem\ncategory: poetry\ndate: ${today()}\nexcerpt: "A few words about this poem."\nreadingTime: "3 min read"\npoem: true\ntags: ["memory", "home"]\nstatus: published\n---\n\nWrite one line per verse.\nLeave a blank line between stanzas.`;
-  return `<main class="section-wrap static-page publishing-guide"><p class="eyebrow">ADD YOUR WRITING</p><h1>Got something to share?</h1><p>You can add a poem, story, or reflection right in the writing folder. Pick the section it belongs in, add a file, and follow the example below.</p><p><a class="contact-email" href="${escapeAttribute(editLink)}">Open the writing folder ↗</a></p><ol><li>Choose <code>poetry</code>, <code>stories</code>, or <code>reflections</code> in the folder.</li><li>Create a Markdown file with a short name in lowercase, using hyphens between words. For example: <code>a-new-poem.md</code>.</li><li>Copy the example below and replace the sample title, date, introduction, tags, and verses with your own. Keep <code>poem: true</code> for poems so the line breaks stay as you intended.</li><li>Save your changes. If GitHub offers to make a pull request, open it and merge it when it’s ready. Your new piece will appear on the site after that.</li></ol><pre><code>${escapeHTML(example)}</code></pre><h2>Keeping a draft off the site</h2><p>Change <code>status: published</code> to <code>status: draft</code> to keep a piece off the site. If the repository is public, the file can still be read on GitHub, so keep private writing somewhere else.</p><h2>Changing site details</h2><p>Use <code>content/site.json</code> to change the About text, contact details, social links, or featured piece.</p></main>`;
 }
 function headMetadata(route, title, description, options = {}) {
   const url = canonical(route);
