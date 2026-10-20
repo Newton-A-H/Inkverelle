@@ -9,6 +9,10 @@ const siteUrl = (process.env.SITE_URL || 'http://localhost:8000').replace(/\/$/,
 const repository = process.env.GITHUB_REPOSITORY || '';
 const repositoryUrl = /^[-\w.]+\/[-\w.]+$/.test(repository) ? `https://github.com/${repository}` : '';
 const site = JSON.parse(fs.readFileSync(path.join(root, 'content/site.json'), 'utf8'));
+const facebookSearchUrl = site.facebookName
+  ? `https://www.facebook.com/search/top/?q=${encodeURIComponent(site.facebookName)}`
+  : 'https://www.facebook.com/';
+const footerSocialLinks = `<div class="footer-social" aria-label="Contact and social links"><a href="mailto:${escapeAttribute(site.contactEmail || '')}">Email ↗</a><a href="${escapeAttribute(facebookSearchUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Search Facebook for ${escapeAttribute(site.facebookName || site.name)}">Facebook · ${escapeHTML(site.facebookName || site.name)} ↗</a></div>`;
 const posts = loadPosts().filter(post => post.status === 'published' && post.date <= today());
 if (!posts.length) throw new Error('No published writing found in content/');
 const duplicateSlugs = duplicates(posts.map(post => post.slug));
@@ -47,6 +51,7 @@ home = home
   .replace('{{ABOUT_SHORT}}', escapeHTML((site.aboutParagraphs?.[0] || 'A literary home for poems, stories, and reflections.').slice(0, 220)))
   .replaceAll('{{CONTACT_EMAIL}}', escapeAttribute(site.contactEmail || ''))
   .replaceAll('{{FACEBOOK_NAME}}', escapeHTML(site.facebookName || ''))
+  .replaceAll('{{FACEBOOK_URL}}', escapeAttribute(facebookSearchUrl))
   .replace('{{ABOUT_HEADING}}', escapeHTML(site.aboutHeading || 'About Inkverelle'))
   .replace('{{ABOUT_PARAGRAPHS}}', (site.aboutParagraphs || []).map(text => `<p>${escapeHTML(text)}</p>`).join(''))
   .replace('href="admin/"', `href="${url('admin/')}"`)
@@ -64,7 +69,7 @@ home = home
   .replace('href="#stories">Stories</a><a href="#poetry">Poetry', `href="${url('stories/')}">Stories</a><a href="${url('poetry/')}">Poetry`)
   .replace('href="#reflections">Reflections', `href="${url('reflections/')}">Reflections`)
   .replace('href="#about">About', `href="${url('about/')}">About`)
-  .replace('</div><span>Made with care, in Nairobi.</span></div></footer>', `</div><a href="${url('contact/')}">Contact</a><a href="${url('feed.xml')}">RSS</a><span>Made with care, in ${escapeHTML(site.authorLocation || 'Nairobi')}.</span></div></footer>`)
+  .replace('</div><span>Made with care, in Nairobi.</span></div></footer>', `</div><a href="${url('contact/')}">Contact</a><a href="${url('feed.xml')}">RSS</a>${footerSocialLinks}<span>Made with care, in ${escapeHTML(site.authorLocation || 'Nairobi')}.</span></div></footer>`)
   .replace('</head>', `${headMetadata('', site.name, site.description)}</head>`);
 fs.writeFileSync(path.join(output, 'index.html'), home);
 
@@ -107,7 +112,7 @@ for (const [index, post] of posts.entries()) {
 const aboutContent = `<main class="section-wrap static-page"><p class="eyebrow">A NOTE FROM THE EDITOR</p><h1>${escapeHTML(site.aboutHeading || 'About Inkverelle')}</h1>${(site.aboutParagraphs || []).map(text => `<p>${escapeHTML(text)}</p>`).join('')}<h2>What you’ll find here</h2><p>Poetry, stories, and reflections for the quiet hours.</p>${(site.socialLinks || []).map(link => `<p><a href="${escapeAttribute(link.url)}" rel="me noopener">${escapeHTML(link.label)}</a></p>`).join('')}</main>`;
 writePage('about/', `About — ${site.name}`, `About ${site.name} and its writing.`, aboutContent);
 const contactContent = site.contactEmail
-  ? `<main class="section-wrap static-page contact-page"><p class="eyebrow">GET IN TOUCH</p><h1>Let’s start a conversation.</h1><p class="contact-intro">Have a thought, a question, or a piece of writing to share? Send a note to Inkverelle.</p><section class="contact-box" aria-label="Contact Inkverelle"><div class="contact-box-details"><p class="contact-box-label">WRITE DIRECTLY</p><a class="contact-email" href="mailto:${escapeAttribute(site.contactEmail)}">${escapeHTML(site.contactEmail)} <span>↗</span></a><div class="contact-social"><span>FACEBOOK</span><strong>${escapeHTML(site.facebookName || 'Inkverelle')}</strong></div><p class="contact-response-note">Messages open in your email app. Your note is sent only when you choose to send it there.</p></div><form class="contact-form" id="contact-form" data-contact-email="${escapeAttribute(site.contactEmail)}"><label for="contact-name">Your name<input id="contact-name" name="name" autocomplete="name" required></label><label for="contact-reply">Your email<input id="contact-reply" name="reply" type="email" autocomplete="email" required></label><label for="contact-message">Your message<textarea id="contact-message" name="message" rows="5" required></textarea></label><button class="contact-submit" type="submit">Compose email <span>↗</span></button><p class="contact-form-status" id="contact-form-status" role="status" aria-live="polite">This form opens a prefilled email; it does not store or send messages on the website.</p></form></section></main>`
+  ? `<main class="section-wrap static-page contact-page"><p class="eyebrow">GET IN TOUCH</p><h1>Let’s start a conversation.</h1><p class="contact-intro">Have a thought, a question, or a piece of writing to share? Send a note to Inkverelle.</p><section class="contact-box" aria-label="Contact Inkverelle"><div class="contact-box-details"><p class="contact-box-label">WRITE DIRECTLY</p><a class="contact-email" href="mailto:${escapeAttribute(site.contactEmail)}">${escapeHTML(site.contactEmail)} <span>↗</span></a><a class="contact-social-link" href="${escapeAttribute(facebookSearchUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Search Facebook for ${escapeAttribute(site.facebookName || site.name)}"><span>FACEBOOK</span><strong>${escapeHTML(site.facebookName || 'Inkverelle')} ↗</strong></a><p class="contact-response-note">Messages open in your email app. Your note is sent only when you choose to send it there.</p></div><form class="contact-form" id="contact-form" data-contact-email="${escapeAttribute(site.contactEmail)}"><label for="contact-name">Your name<input id="contact-name" name="name" autocomplete="name" required></label><label for="contact-reply">Your email<input id="contact-reply" name="reply" type="email" autocomplete="email" required></label><label for="contact-message">Your message<textarea id="contact-message" name="message" rows="5" required></textarea></label><button class="contact-submit" type="submit">Compose email <span>↗</span></button><p class="contact-form-status" id="contact-form-status" role="status" aria-live="polite">This form opens a prefilled email; it does not store or send messages on the website.</p></form></section></main>`
   : `<main class="section-wrap static-page"><p class="eyebrow">GET IN TOUCH</p><h1>Contact</h1><p>Contact details will appear here when an email address is added to <code>content/site.json</code>.</p></main>`;
 writePage('contact/', `Contact — ${site.name}`, `Contact the editor of ${site.name}.`, contactContent);
 writePage('search/', `Search — ${site.name}`, `Search stories, poems, and reflections from ${site.name}.`, `<main class="section-wrap static-page search-page"><p class="eyebrow">THE ARCHIVE</p><h1>Search the journal</h1><label for="search-input">Search by title, category, tag, or phrase</label><input id="search-input" type="search" placeholder="Start typing…"><div id="search-results" class="search-results" role="status" aria-live="polite"></div></main>`);
@@ -178,7 +183,9 @@ function writePage(route, title, description, content, options = {}) {
   const dest = path.join(output, route);
   const file = route.endsWith('.html') ? dest : path.join(dest, 'index.html');
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(file, renderLayout(route, title, description, content, options));
+  const footerMarker = `</div><span>Made with care, in ${escapeHTML(site.authorLocation || 'Nairobi')}.</span></div></footer>`;
+  const footerWithSocials = `</div>${footerSocialLinks}<span>Made with care, in ${escapeHTML(site.authorLocation || 'Nairobi')}.</span></div></footer>`;
+  fs.writeFileSync(file, renderLayout(route, title, description, content, options).replace(footerMarker, footerWithSocials));
 }
 function publishingGuide(repoUrl) {
   const editLink = repoUrl ? `${repoUrl}/tree/main/content` : 'https://github.com/';
