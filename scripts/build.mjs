@@ -95,7 +95,7 @@ for (const [index, post] of posts.entries()) {
   const tags = post.tags.map(tag => `<a class="article-tag" href="${url(`tag/${slugify(tag)}/`)}">${escapeHTML(tag)}</a>`).join('');
   const related = posts.filter(other => other.category === post.category && other.slug !== post.slug).slice(0, 3);
   const body = post.poem
-    ? `<div class="article-body poetry-body">${post.body.map(stanza => `<p class="poem-stanza">${escapeHTML(stanza)}</p>`).join('')}</div>`
+    ? `<div class="article-body poetry-body">${post.body.map(stanza => `<p class="poem-stanza">${renderInline(stanza).replace(/\r?\n/g, '<br>')}</p>`).join('')}</div>`
     : `<div class="article-body">${post.body.map(paragraph => renderParagraph(paragraph)).join('')}</div>`;
   const articleData = {
     '@context': 'https://schema.org', '@type': post.poem ? 'Poem' : 'Article', headline: post.title,
