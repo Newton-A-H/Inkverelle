@@ -1,7 +1,9 @@
 import { prisma } from '../lib/prisma.js';
 import {
   hashPassword,
+  hitRateLimit,
   isSameOrigin,
+  recordRateLimit,
   termsVersion,
   tokenHash
 } from '../lib/security.js';
@@ -19,6 +21,10 @@ export default async function handler(req, res) {
   if (!isSameOrigin(req)) return reply(res, 403, { error: 'This request could not be verified.' });
 
   try {
+    if (await hitRateLimit('activation', 'all', req)) {
+      return reply(res, 429, { error: 'Too many activation attempts. Please try again in 15 minutes.' });
+    }
+    await recordRateLimit('activation', 'all', req, { limit: 8 });
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
     const token = String(body.token || '');
     const password = String(body.password || '');

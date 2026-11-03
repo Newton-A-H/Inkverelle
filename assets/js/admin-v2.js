@@ -9,6 +9,37 @@ const postIdField = document.querySelector('#post-id');
 const csrfHeader = 'X-CSRF-Token';
 let csrfToken = '';
 let currentUser = null;
+let idleTimer = null;
+let lastSessionCheck = 0;
+const idleTimeoutMs = 15 * 60 * 1000;
+
+function signOutForInactivity() {
+  if (!currentUser) return;
+  api('api/auth', { method: 'DELETE' }).catch(() => {});
+  window.clearTimeout(idleTimer);
+  dashboard.hidden = true;
+  loginPanel.hidden = false;
+  currentUser = null;
+  csrfToken = '';
+  showMessage('You were signed out after 15 minutes without activity.');
+}
+
+function resetIdleTimer() {
+  if (!currentUser) return;
+  window.clearTimeout(idleTimer);
+  idleTimer = window.setTimeout(signOutForInactivity, idleTimeoutMs);
+
+  const now = Date.now();
+  if (now - lastSessionCheck < 60_000) return;
+  lastSessionCheck = now;
+  api('api/auth').then(state => {
+    if (!state.authenticated) signOutForInactivity();
+  }).catch(() => {});
+}
+
+['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(type => {
+  document.addEventListener(type, resetIdleTimer, { passive: true });
+});
 
 function showMessage(text, error = false) {
   if (!message) return;
@@ -300,6 +331,8 @@ async function setupAdminMfa() {
 
 async function openDashboard(user, state = {}) {
   currentUser = user;
+  lastSessionCheck = Date.now();
+  resetIdleTimer();
   loginPanel.hidden = true;
   dashboard.hidden = false;
   if (user.role === 'ADMIN' && state.mfaSetupRequired) {
@@ -410,6 +443,7 @@ document.querySelector('#mfa-continue')?.addEventListener('click', async () => {
   if (state.authenticated) await openDashboard(state.user, state);
 });
 document.querySelector('#admin-sign-out')?.addEventListener('click', async () => {
+  window.clearTimeout(idleTimer);
   try {
     await api('api/auth', { method: 'DELETE' });
   } finally {

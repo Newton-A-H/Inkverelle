@@ -60,11 +60,13 @@ npm run vercel:dev
 
 ## Security and account operations
 
-Passwords are hashed with scrypt and a per-password random salt. Sessions use random, database-backed tokens stored only as hashes, HttpOnly and SameSite cookies, CSRF checks, role-based authorization, and login throttling. Account invitations are stored as hashes, expire after three days, and can only be used once. The database migration is in `prisma/migrations/`.
+Passwords are hashed with scrypt and a per-password random salt. Sessions use random, database-backed tokens stored only as hashes, HttpOnly and SameSite cookies, CSRF checks, role-based authorization, and rate limits on sign-in, account requests, invitation activation, and administrator MFA setup. Sessions expire after 15 minutes without activity, enforced by the server and dashboard. Account invitations are stored as hashes, expire after three days, and can only be used once. The database migration is in `prisma/migrations/`.
+
+Public reading pages suppress the browser context menu as a light copying deterrent. This cannot prevent screenshots, developer tools, or copying through other browser and operating-system features; web pages cannot reliably block those actions.
 
 Administrators must enroll an authenticator app the first time they sign in. MFA uses time-based one-time passwords, encrypts the secret with a key derived from `ADMIN_SESSION_SECRET`, and generates single-use recovery codes. Store recovery codes securely. Keep `ADMIN_SESSION_SECRET` stable: changing it requires MFA to be set up again after a controlled database reset. Admin account and moderation endpoints require both a valid session and completed MFA.
 
-Rejected account requests are automatically deleted after 12 months from their review date. A daily Vercel Cron invokes `/api/cron/retention`; set a unique `CRON_SECRET` in the Vercel project before deployment. The job deletes only rejected requests and leaves pending and approved requests untouched. Vercel Cron jobs run only on production deployments.
+Rejected account requests are automatically deleted after 12 months from their review date. A daily Vercel Cron invokes `/api/cron/retention`; set a unique `CRON_SECRET` in the Vercel project before deployment. The job leaves pending and approved requests untouched, and clears old rate-limit records and expired sessions. Vercel Cron jobs run only on production deployments.
 
 Email delivery uses Resend when its environment variables are configured. Invitation and reset links remain available in the dashboard whenever delivery fails or is not configured.
 

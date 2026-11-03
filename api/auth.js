@@ -4,6 +4,7 @@ import {
   clearSessionCookies,
   cookieValue,
   createSession,
+  getSession,
   hashPassword,
   hitRateLimit,
   isSameOrigin,
@@ -32,13 +33,8 @@ export default async function handler(req, res) {
     if (req.method === 'GET') {
       const token = cookieValue(req, 'inkverelle_csrf');
       const sessionToken = cookieValue(req, 'inkverelle_session');
-      const session = sessionToken
-        ? await prisma.session.findUnique({
-          where: { tokenHash: tokenHash(sessionToken) },
-          include: { user: true }
-        })
-        : null;
-      const valid = session && session.expiresAt > new Date() && session.user.active;
+      const session = sessionToken ? await getSession(req) : null;
+      const valid = Boolean(session);
       return reply(res, 200, {
         authenticated: Boolean(valid),
         user: valid ? { id: session.user.id, email: session.user.email, name: session.user.name, role: session.user.role } : null,

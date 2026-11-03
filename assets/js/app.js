@@ -1,3 +1,8 @@
+// A small copying deterrent on public reading pages. Browser tools can still bypass it.
+if (!/(?:^|\/)admin(?:\/|$)/i.test(window.location.pathname)) {
+  document.addEventListener('contextmenu', event => event.preventDefault());
+}
+
 const menuButton = document.querySelector('.menu-toggle');
 const siteNav = document.querySelector('#site-nav');
 menuButton?.addEventListener('click', () => {

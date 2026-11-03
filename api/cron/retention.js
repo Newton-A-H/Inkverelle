@@ -25,7 +25,19 @@ export default async function handler(req, res) {
     const result = await prisma.accountRequest.deleteMany({
       where: { status: 'REJECTED', reviewedAt: { lt: cutoff } }
     });
-    return res.status(200).json({ deletedRejectedRequests: result.count });
+    const rateLimitCutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const rateLimits = await prisma.loginRateLimit.deleteMany({
+      where: { updatedAt: { lt: rateLimitCutoff } }
+    });
+    const now = new Date();
+    const idleCutoff = new Date(now.getTime() - 15 * 60 * 1000);
+    await prisma.session.deleteMany({
+      where: { OR: [{ expiresAt: { lt: now } }, { lastSeenAt: { lt: idleCutoff } }] }
+    });
+    return res.status(200).json({
+      deletedRejectedRequests: result.count,
+      deletedRateLimitRecords: rateLimits.count
+    });
   } catch (error) {
     console.error('Inkverelle rejected-request retention:', error);
     return res.status(503).json({ error: 'Retention cleanup failed.' });

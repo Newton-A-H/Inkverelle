@@ -1,5 +1,5 @@
 import { prisma } from '../lib/prisma.js';
-import { getSession, isSameOrigin, requireCsrf } from '../lib/security.js';
+import { getSession, hitRateLimit, isSameOrigin, recordRateLimit, requireCsrf } from '../lib/security.js';
 import {
   createRecoveryCodes,
   decryptTotpSecret,
@@ -20,10 +20,14 @@ export default async function handler(req, res) {
     const session = await getSession(req);
     if (!session || session.user.role !== 'ADMIN') return reply(res, 401, { error: 'Administrator sign-in is required.' });
     if (session.user.mfaEnabledAt || session.mfaVerifiedAt) return reply(res, 409, { error: 'MFA is already enabled for this account.' });
+    if (await hitRateLimit('mfa-setup', session.userId, req)) {
+      return reply(res, 429, { error: 'Too many authenticator setup attempts. Please try again in 15 minutes.' });
+    }
     if (req.method !== 'POST' || !isSameOrigin(req) || !await requireCsrf(req, session)) {
       return reply(res, req.method === 'POST' ? 403 : 405, { error: 'This request could not be verified.' });
     }
 
+    await recordRateLimit('mfa-setup', session.userId, req, { limit: 10 });
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
     if (body.action === 'begin') {
       const secret = generateTotpSecret();
