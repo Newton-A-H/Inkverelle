@@ -227,7 +227,7 @@ function renderAdminList(target, records, emptyText, createRow) {
 }
 
 async function refreshAccounts() {
-  const { requests, authors } = await api('api/admin-accounts');
+  const { requests, users } = await api('api/admin-accounts');
   renderAdminList(document.querySelector('#account-requests'), requests, 'There are no account requests to review.', request => {
     const row = document.createElement('article');
     row.className = 'managed-piece';
@@ -268,19 +268,23 @@ async function refreshAccounts() {
     return row;
   });
 
-  renderAdminList(document.querySelector('#author-accounts'), authors, 'There are no author accounts yet.', author => {
+  renderAdminList(document.querySelector('#user-accounts'), users, 'There are no user accounts yet.', author => {
     const row = document.createElement('article');
     row.className = 'managed-piece';
     const details = document.createElement('div');
     const meta = document.createElement('p');
     meta.className = 'eyebrow';
-    meta.textContent = author.active ? 'active account' : 'invitation pending';
+    meta.textContent = `${author.role.toLowerCase()} · ${author.active ? 'active' : 'inactive'} · joined ${new Date(author.createdAt).toLocaleDateString()}`;
     const name = document.createElement('h3');
     name.textContent = `${author.name} · ${author.email}`;
     details.append(meta, name);
     const actions = document.createElement('div');
     actions.className = 'managed-actions';
-    if (!author.active) {
+    if (author.role === 'ADMIN') {
+      const note = document.createElement('p');
+      note.textContent = 'Administrator account';
+      actions.append(note);
+    } else if (!author.active && author.role === 'AUTHOR') {
       actions.append(actionButton('Create new invitation link', async () => {
         try {
           const result = await api('api/admin-accounts', {
@@ -290,7 +294,7 @@ async function refreshAccounts() {
           reportInvitation(row, result);
         } catch (error) { showMessage(error.message, true); }
       }));
-    } else {
+    } else if (author.active && author.role === 'AUTHOR') {
       actions.append(actionButton('Create password reset link', async () => {
         try {
           const result = await api('api/admin-accounts', {
@@ -301,11 +305,11 @@ async function refreshAccounts() {
         } catch (error) { showMessage(error.message, true); }
       }));
     }
-    actions.append(actionButton(author.active ? 'Suspend' : 'Reactivate', async () => {
+    if (author.role !== 'ADMIN') actions.append(actionButton(author.active ? 'Suspend' : 'Reactivate', async () => {
       try {
         await api('api/admin-accounts', {
           method: 'PATCH',
-          body: JSON.stringify({ action: 'toggle-author', userId: author.id, active: !author.active })
+          body: JSON.stringify({ action: 'toggle-user', userId: author.id, active: !author.active })
         });
         await refreshAccounts();
       } catch (error) { showMessage(error.message, true); }
@@ -330,6 +334,12 @@ async function setupAdminMfa() {
 }
 
 async function openDashboard(user, state = {}) {
+  const currentPath = window.location.pathname.replace(/\/$/, '');
+  const expectedPath = user.role === 'ADMIN' ? '/admin' : user.role === 'AUTHOR' ? '/author-dashboard' : '/reader';
+  if (currentPath !== expectedPath) {
+    window.location.replace(expectedPath + '/');
+    return;
+  }
   currentUser = user;
   lastSessionCheck = Date.now();
   resetIdleTimer();
@@ -350,7 +360,7 @@ async function openDashboard(user, state = {}) {
   try {
     await refreshWriting();
     if (admin) await refreshAccounts();
-    showMessage(admin ? 'Review submissions and manage author accounts here.' : 'Your drafts stay private until you submit them and the editor approves them.');
+    showMessage(admin ? 'Review submissions and manage user accounts here.' : 'Your drafts stay private until you submit them and the editor approves them.');
   } catch (error) {
     showMessage(error.message, true);
   }

@@ -1,0 +1,25 @@
+<main class="section-wrap static-page account-page">
+  <p class="eyebrow">ACCOUNT SETTINGS</p>
+  <h1>Your profile</h1>
+  <p class="admin-intro" id="profile-summary">Manage your Inkverelle account details.</p>
+  <p class="admin-message" id="profile-message" role="status" aria-live="polite"></p>
+  <section class="admin-panel" aria-labelledby="profile-details-heading">
+    <h2 id="profile-details-heading">Profile details</h2>
+    <p id="profile-email"></p>
+    <form class="admin-form" id="profile-form">
+      <label for="profile-name">Name shown with your account<input id="profile-name" name="name" maxlength="100" required></label>
+      <div class="admin-actions"><button type="submit">Save profile</button><a id="profile-return" class="text-link" href="reader/">Back to your account</a></div>
+    </form>
+  </section>
+  <section class="admin-panel" aria-labelledby="password-heading">
+    <h2 id="password-heading">Change password</h2>
+    <form class="admin-form" id="password-form">
+      <label for="current-password">Current password<span class="password-field"><input id="current-password" name="currentPassword" type="password" autocomplete="current-password" required><button class="password-toggle" type="button" data-password-toggle aria-controls="current-password" aria-pressed="false" aria-label="Show password">Show</button></span></label>
+      <label for="new-password">New password<span class="password-field"><input id="new-password" name="newPassword" type="password" autocomplete="new-password" minlength="12" maxlength="128" required><button class="password-toggle" type="button" data-password-toggle aria-controls="new-password" aria-pressed="false" aria-label="Show password">Show</button></span><small>Use at least 12 characters.</small></label>
+      <label for="confirm-password">Confirm new password<span class="password-field"><input id="confirm-password" name="confirmation" type="password" autocomplete="new-password" minlength="12" maxlength="128" required><button class="password-toggle" type="button" data-password-toggle aria-controls="confirm-password" aria-pressed="false" aria-label="Show password">Show</button></span></label>
+      <div class="admin-actions"><button type="submit">Change password</button></div>
+    </form>
+  </section>
+  <button id="profile-signout" type="button">Sign out</button>
+</main>
+<script src="assets/js/profile.js" defer></script>

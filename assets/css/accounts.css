@@ -1,0 +1,40 @@
+.account-page {
+  max-width: 880px;
+  padding-block: clamp(42px, 8vw, 88px) 96px;
+}
+.account-page > h1 { margin-bottom: 14px; }
+.account-page > .admin-intro { margin-bottom: 28px; }
+.account-page .admin-panel { border-radius: 3px; }
+.account-page .admin-actions { align-items: center; flex-wrap: wrap; }
+.account-page .text-link { font-size: 14px; }
+.account-page .consent-check { display: flex; align-items: flex-start; gap: 12px; }
+.account-page .consent-check input { width: auto; margin-top: 5px; }
+.account-footnote { margin-top: 28px; color: #59665f; }
+.account-footnote a { color: #173b2e; text-underline-offset: 4px; }
+.reader-page { max-width: 1160px; }
+.account-toolbar, .reader-filters, .account-invitation-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.account-toolbar { margin: 28px 0 18px; padding: 14px 0; border-block: 1px solid #d8ded8; }
+.account-toolbar button, .account-toolbar a, .reader-filters button, .reader-save-button {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 9px 14px;
+  border: 1px solid #cbd5ce; border-radius: 2px; background: transparent; color: #233a31; font: 600 14px/1.3 var(--sans); text-decoration: none; cursor: pointer;
+}
+.account-toolbar [aria-pressed="true"], .reader-filters [aria-pressed="true"] { background: #1e3d32; border-color: #1e3d32; color: #fffefa; }
+.reader-filters { margin: 18px 0 28px; }
+.reader-grid .writing-card { display: flex; flex-direction: column; justify-content: space-between; }
+.reader-grid .writing-card-link { display: block; color: inherit; text-decoration: none; }
+.reader-grid .writing-card-link h2 { margin: 8px 0 12px; font: 500 clamp(23px, 3vw, 31px)/1.2 var(--serif); }
+.reader-grid .writing-card-link p:not(.eyebrow) { line-height: 1.65; }
+.reader-grid .reader-save-button { align-self: flex-start; margin: 16px; }
+.reader-save-button[aria-pressed="true"] { background: #1e3d32; color: white; }
+.card-author { color: #526259; font-size: 14px; }
+.account-invitation { padding-block: clamp(48px, 7vw, 88px); }
+.account-invitation > h2 { max-width: 720px; margin: 8px 0 14px; font: 500 clamp(34px, 5vw, 56px)/1.1 var(--serif); color: #20372f; }
+.account-invitation > p:not(.eyebrow) { max-width: 650px; color: #59665f; line-height: 1.75; }
+.account-invitation-actions { margin-top: 24px; }
+@media (max-width: 640px) {
+  .account-toolbar { align-items: stretch; }
+  .account-toolbar > * { flex: 1 1 42%; }
+  .reader-filters { gap: 8px; }
+  .reader-filters button { flex: 1 1 40%; }
+  .reader-grid .writing-card-link h2 { font-size: 25px; }
+}

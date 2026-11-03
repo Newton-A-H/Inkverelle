@@ -42,13 +42,13 @@ export default async function handler(req, res) {
       return reply(res, 429, { error: 'Too many requests. Please try again in 15 minutes.' });
     }
 
-    const existingUser = await prisma.user.findUnique({ where: { email }, select: { id: true } });
-    if (existingUser) return reply(res, 200, { received: true });
+    const existingUser = await prisma.user.findUnique({ where: { email }, select: { id: true, role: true, active: true } });
+    if (existingUser && (existingUser.role !== 'READER' || !existingUser.active)) return reply(res, 200, { received: true });
 
     const pending = await prisma.accountRequest.findFirst({ where: { email, status: 'PENDING' } });
     if (!pending) {
       await prisma.accountRequest.create({
-        data: { email, name, reason, termsVersion }
+        data: { email, name, reason, termsVersion, userId: existingUser?.id || null }
       });
       const notification = await sendAccountRequestNotice({ name, email });
       if (!notification.sent) {

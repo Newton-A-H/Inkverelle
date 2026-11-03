@@ -10,6 +10,7 @@ datasource db {
 enum UserRole {
   ADMIN
   AUTHOR
+  READER
 }
 
 enum AccountRequestStatus {
@@ -43,10 +44,13 @@ model User {
   active             Boolean         @default(false)
   termsAcceptedAt    DateTime?
   termsVersion       String?
+  privacyAcceptedAt  DateTime?
+  privacyVersion     String?
   createdAt          DateTime        @default(now())
   updatedAt          DateTime        @updatedAt
   posts              Post[]
   sessions           Session[]
+  favorites          Favorite[]
   invitation          Invitation?
   accountRequest      AccountRequest? @relation("RequestUser")
   reviewedRequests   AccountRequest[] @relation("RequestReviewer")
@@ -94,6 +98,16 @@ model Session {
 
   @@index([userId, expiresAt])
   @@index([expiresAt])
+}
+
+model Favorite {
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  createdAt DateTime @default(now())
+
+  @@id([userId, slug])
+  @@index([userId, createdAt(sort: Desc)])
 }
 
 model Post {

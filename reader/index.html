@@ -1,0 +1,20 @@
+<main class="section-wrap static-page account-page reader-page">
+  <p class="eyebrow">READER ACCOUNT</p>
+  <h1>Your reading room</h1>
+  <p class="admin-intro" id="reader-welcome">Browse Inkverelle and keep the pieces you want to revisit.</p>
+  <p class="admin-message" id="reader-message" role="status" aria-live="polite"></p>
+  <nav class="account-toolbar" aria-label="Reader account">
+    <button type="button" data-reader-view="all" aria-pressed="true">All writing</button>
+    <button type="button" data-reader-view="favorites" aria-pressed="false">Your favorites</button>
+    <a href="profile/">Profile and password</a>
+    <button id="reader-signout" type="button">Sign out</button>
+  </nav>
+  <div class="reader-filters" aria-label="Filter by section">
+    <button type="button" data-category="all" aria-pressed="true">Everything</button>
+    <button type="button" data-category="Poetry" aria-pressed="false">Poetry</button>
+    <button type="button" data-category="Stories" aria-pressed="false">Stories</button>
+    <button type="button" data-category="Reflections" aria-pressed="false">Reflections</button>
+  </div>
+  <div class="writing-grid reader-grid" id="reader-writing" aria-live="polite"></div>
+</main>
+<script src="assets/js/reader.js" defer></script>

@@ -23,18 +23,17 @@ export default async function handler(req, res) {
     if (!session) return reply(res, 401, { error: 'Administrator access with verified MFA is required.' });
 
     if (req.method === 'GET') {
-      const [requests, authors] = await Promise.all([
+      const [requests, users] = await Promise.all([
         prisma.accountRequest.findMany({
           orderBy: { requestedAt: 'desc' },
           include: { user: { select: { id: true, active: true, email: true } } }
         }),
         prisma.user.findMany({
-          where: { role: 'AUTHOR' },
           orderBy: { createdAt: 'desc' },
-          select: { id: true, email: true, name: true, active: true, createdAt: true }
+          select: { id: true, email: true, name: true, role: true, active: true, createdAt: true }
         })
       ]);
-      return reply(res, 200, { requests, authors });
+      return reply(res, 200, { requests, users });
     }
 
     if (!['POST', 'PATCH'].includes(req.method)) {
@@ -53,32 +52,47 @@ export default async function handler(req, res) {
       if (body.decision === 'reject') {
         await prisma.accountRequest.update({
           where: { id: request.id },
-          data: { status: 'REJECTED', reviewedAt: new Date(), reviewerId: session.userId }
+          data: { status: 'REJECTED', reviewedAt: new Date(), reviewerId: session.userId, userId: null }
         });
         return reply(res, 200, { reviewed: true });
       }
       if (body.decision !== 'approve') return reply(res, 400, { error: 'Choose approve or reject.' });
-      if (await prisma.user.findUnique({ where: { email: request.email }, select: { id: true } })) {
+      const existing = await prisma.user.findUnique({ where: { email: request.email } });
+      if (existing && existing.role !== 'READER') {
         return reply(res, 409, { error: 'An account already uses that email address.' });
       }
 
-      const token = (await prisma.$transaction(async tx => {
-        const user = await tx.user.create({
-          data: {
-            email: request.email,
-            name: request.name,
-            role: 'AUTHOR',
-            active: false,
-            termsAcceptedAt: request.requestedAt,
-            termsVersion: request.termsVersion
-          }
-        });
+      const userId = await prisma.$transaction(async tx => {
+        const user = existing
+          ? await tx.user.update({
+            where: { id: existing.id },
+            data: {
+              name: request.name,
+              role: 'AUTHOR',
+              active: false,
+              passwordHash: null,
+              termsAcceptedAt: request.requestedAt,
+              termsVersion: request.termsVersion
+            }
+          })
+          : await tx.user.create({
+            data: {
+              email: request.email,
+              name: request.name,
+              role: 'AUTHOR',
+              active: false,
+              termsAcceptedAt: request.requestedAt,
+              termsVersion: request.termsVersion
+            }
+          });
         await tx.accountRequest.update({
           where: { id: request.id },
           data: { status: 'APPROVED', reviewedAt: new Date(), reviewerId: session.userId, userId: user.id }
         });
+        if (existing) await tx.session.deleteMany({ where: { userId: existing.id } });
         return user.id;
-      }).then(createInvitation));
+      });
+      const token = await createInvitation(userId);
       const invitationUrl = `/activate/?token=${encodeURIComponent(token)}`;
       const delivery = await sendInvitationEmail({ to: request.email, name: request.name, invitationUrl });
       return reply(res, 200, {
@@ -108,9 +122,9 @@ export default async function handler(req, res) {
       });
     }
 
-    if (req.method === 'PATCH' && body.action === 'toggle-author') {
-      const user = await prisma.user.findFirst({ where: { id: String(body.userId || ''), role: 'AUTHOR' } });
-      if (!user) return reply(res, 404, { error: 'That author account could not be found.' });
+    if (req.method === 'PATCH' && body.action === 'toggle-user') {
+      const user = await prisma.user.findFirst({ where: { id: String(body.userId || ''), role: { not: 'ADMIN' } } });
+      if (!user) return reply(res, 404, { error: 'That user account could not be found.' });
       const active = body.active === true;
       await prisma.user.update({ where: { id: user.id }, data: { active } });
       if (!active) await prisma.session.deleteMany({ where: { userId: user.id } });
@@ -120,7 +134,7 @@ export default async function handler(req, res) {
     if (req.method === 'PATCH' && ['resend-invitation', 'password-reset'].includes(body.action)) {
       const user = await prisma.user.findFirst({ where: { id: String(body.userId || ''), role: 'AUTHOR' } });
       if (!user || (body.action === 'resend-invitation' && user.active) || (body.action === 'password-reset' && !user.active)) {
-        return reply(res, 404, { error: 'That author account could not be found for this action.' });
+        return reply(res, 404, { error: 'That account could not be found for this action.' });
       }
       const token = await createInvitation(user.id);
       const invitationUrl = `/activate/?token=${encodeURIComponent(token)}`;

@@ -2,17 +2,9 @@
   <p class="eyebrow">AUTHOR ACCESS</p>
   <h1>Share your writing</h1>
   <p>Everyone can read Inkverelle without an account. Authors need an approved account to submit writing for review.</p>
+  <p class="admin-message" id="author-message" role="status" aria-live="polite"></p>
 
-  <section class="admin-panel" aria-labelledby="author-login-title">
-    <h2 id="author-login-title">Author sign in</h2>
-    <p class="admin-message" id="author-message" role="status" aria-live="polite"></p>
-    <form class="admin-form" id="author-login-form">
-      <label for="author-email">Email address<input id="author-email" name="email" type="email" autocomplete="username" maxlength="254" required></label>
-      <label for="author-password">Password<span class="password-field"><input id="author-password" name="password" type="password" autocomplete="current-password" required><button class="password-toggle" type="button" data-password-toggle aria-controls="author-password" aria-pressed="false" aria-label="Show password">Show</button></span></label>
-      <label for="author-totp-code" id="author-totp-label" hidden>Authenticator or recovery code<input id="author-totp-code" name="totpCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="24"></label>
-      <div class="admin-actions"><button type="submit">Sign in</button></div>
-    </form>
-  </section>
+  <p class="account-footnote">Already have an account? <a href="login/">Sign in</a>.</p>
 
   <section class="admin-panel" aria-labelledby="account-request-title">
     <h2 id="account-request-title">Request an author account</h2>

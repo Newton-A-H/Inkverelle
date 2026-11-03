@@ -4,29 +4,13 @@
   <p class="admin-intro">Sign in to submit writing or manage the journal. New work appears publicly after an editor approves it.</p>
   <p class="admin-message" id="admin-message" role="status" aria-live="polite"></p>
   <section class="admin-panel" id="admin-login-panel" aria-labelledby="login-title">
-    <h2 id="login-title">Sign in</h2>
-    <p>Use the email address and password for your Inkverelle account.</p>
-    <form class="admin-form" id="admin-login-form">
-      <label for="admin-email">
-        Email address
-        <input id="admin-email" name="email" type="email" autocomplete="username" maxlength="254" required>
-      </label>
-      <label for="admin-password">
-        Password
-        <span class="password-field">
-          <input id="admin-password" name="password" type="password" autocomplete="current-password" required>
-          <button class="password-toggle" type="button" data-password-toggle aria-controls="admin-password" aria-pressed="false" aria-label="Show password">Show</button>
-        </span>
-      </label>
-      <label for="admin-totp-code" id="admin-totp-label" hidden>
-        Authenticator or recovery code
-        <input id="admin-totp-code" name="totpCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="24">
-      </label>
-      <div class="admin-actions"><button type="submit">Continue</button></div>
-    </form>
+    <h2 id="login-title">Sign in to continue</h2>
+    <p>All account types use the same sign-in page. Your role determines which workspace opens.</p>
+    <a class="text-link" href="login/">Go to sign in <span>↗</span></a>
   </section>
   <section class="admin-panel" id="admin-dashboard" aria-labelledby="writing-form-title" hidden>
     <button class="admin-signout" id="admin-sign-out" type="button">Sign out</button>
+    <a class="admin-signout" href="profile/">Profile and password</a>
     <section class="admin-panel" id="mfa-setup-panel" hidden aria-labelledby="mfa-setup-title">
       <h2 id="mfa-setup-title">Secure your administrator account</h2>
       <p>Set up an authenticator app before opening the editor controls. Save the recovery codes somewhere private.</p>
@@ -101,8 +85,8 @@
       </form>
       <h3>Account requests</h3>
       <div class="admin-list" id="account-requests" aria-live="polite"></div>
-      <h3>Author accounts</h3>
-      <div class="admin-list" id="author-accounts" aria-live="polite"></div>
+      <h3>All user accounts</h3>
+      <div class="admin-list" id="user-accounts" aria-live="polite"></div>
     </section>
   </section>
 </main>

@@ -23,7 +23,7 @@ const posts = loadPosts().filter(post => post.status === 'published' && post.dat
 if (!posts.length) throw new Error('No published writing found in content/');
 const duplicateSlugs = duplicates(posts.map(post => post.slug));
 if (duplicateSlugs.length) throw new Error(`Duplicate slugs: ${duplicateSlugs.join(', ')}`);
-const allRoutes = new Set(['', 'stories/', 'poetry/', 'reflections/', 'about/', 'contact/', 'authors/', 'activate/', 'author-dashboard/', 'admin/', 'terms/', 'search/', 'read/', 'reading-list/', 'privacy/']);
+const allRoutes = new Set(['', 'stories/', 'poetry/', 'reflections/', 'about/', 'contact/', 'authors/', 'activate/', 'author-dashboard/', 'admin/', 'terms/', 'search/', 'read/', 'reading-list/', 'privacy/', 'login/', 'reader/', 'profile/']);
 for (const post of posts) allRoutes.add(`${post.slug}/`);
 for (const category of new Set(posts.map(post => post.category))) allRoutes.add(`category/${slugify(category)}/`);
 for (const tag of new Set(posts.flatMap(post => post.tags))) allRoutes.add(`tag/${slugify(tag)}/`);
@@ -226,6 +226,9 @@ const dashboardPage = fs.readFileSync(path.join(root, 'admin', 'index.html'), 'u
 writePage('admin/', `Manage writing — ${site.name}`, `Private writing dashboard for ${site.name}.`, dashboardPage);
 writePage('author-dashboard/', `Author dashboard — ${site.name}`, `Submit writing and manage your author account.`, dashboardPage);
 writePage('authors/', `Author access — ${site.name}`, `Request an Inkverelle author account or sign in.`, fs.readFileSync(path.join(root, 'authors', 'index.html'), 'utf8'));
+writePage('login/', `Sign in — ${site.name}`, `Sign in or create a reader account.`, fs.readFileSync(path.join(root, 'login', 'index.html'), 'utf8'));
+writePage('reader/', `Reader account — ${site.name}`, `Browse writing and keep your favorites.`, fs.readFileSync(path.join(root, 'reader', 'index.html'), 'utf8'));
+writePage('profile/', `Your profile — ${site.name}`, `Manage your Inkverelle profile and password.`, fs.readFileSync(path.join(root, 'profile', 'index.html'), 'utf8'));
 writePage('activate/', `Activate author account — ${site.name}`, `Set a password for your Inkverelle author account.`, fs.readFileSync(path.join(root, 'activation', 'index.html'), 'utf8'));
 writePage('read/', `Read — ${site.name}`, `Read writing from ${site.name}.`, `
   <main id="dynamic-article" class="article-page">
@@ -252,13 +255,13 @@ writePage('reading-list/', `Reading list — ${site.name}`, `Writing you have sa
     <p id="reading-list-status" class="reading-list-status" role="status" aria-live="polite">Loading your reading list…</p>
     <div id="reading-list-items" class="reading-list-items"></div>
   </main>`);
-writePage('privacy/', `Privacy — ${site.name}`, `How Inkverelle handles author account and reading-list information.`, `
+writePage('privacy/', `Privacy — ${site.name}`, `How Inkverelle handles reader and author account information.`, `
   <main class="section-wrap static-page">
     <p class="eyebrow">YOUR PRIVACY</p>
     <h1>Privacy</h1>
     <div class="legal-copy">
       <h2>Reading the site</h2>
-      <p>You can browse, read, and search all approved writing without an account. Your reading list is kept in this browser on this device.</p>
+      <p>You can browse, read, and search all approved writing without an account. Reader accounts store your name, email address, a one-way password hash, account status, security session records, and any favorites you save. Favorites are tied to your account so they can be available when you sign in again.</p>
       <h2>Author accounts</h2>
       <p>If you request an account, Inkverelle stores the name and email address you provide, your request message, and the request decision. If an account is approved, it stores your account name and email, a one-way password hash, account status, and security session records. Passwords are never stored in plain text.</p>
       <p>Writing submissions, review decisions, and account activity are stored in the site database so the journal can operate and moderate submissions. Hosting and database providers process information to provide these services. The site uses Google Fonts for typography. The contact form opens your email app and does not send or store the message itself.</p>
@@ -300,10 +303,10 @@ writePage('404.html', `Page not found — ${site.name}`, `The requested page cou
     <a class="text-link" href="${url('')}">Back to Inkverelle <span>↗</span></a>
   </main>`);
 
-const searchIndex = posts.map(post => ({ title: post.title, slug: post.slug, category: capitalize(post.category), excerpt: post.excerpt, read: post.read, date: post.date, tags: post.tags, url: url(`${post.slug}/`) }));
+const searchIndex = posts.map(post => ({ title: post.title, slug: post.slug, category: capitalize(post.category), author: post.author || site.authorName, excerpt: post.excerpt, read: post.read, date: post.date, tags: post.tags, url: url(`${post.slug}/`) }));
 fs.writeFileSync(path.join(output, 'search-index.json'), JSON.stringify(searchIndex));
-fs.writeFileSync(path.join(output, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: ${url('admin/')}\nDisallow: ${url('author-dashboard/')}\nDisallow: ${url('authors/')}\nDisallow: ${url('activate/')}\nDisallow: ${url('api/')}\nSitemap: ${canonical('sitemap.xml')}\n`);
-const indexableRoutes = [...allRoutes].filter(route => !['admin/', 'author-dashboard/', 'authors/', 'activate/'].includes(route));
+fs.writeFileSync(path.join(output, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: ${url('admin/')}\nDisallow: ${url('author-dashboard/')}\nDisallow: ${url('authors/')}\nDisallow: ${url('activate/')}\nDisallow: ${url('api/')}\nDisallow: ${url('login/')}\nDisallow: ${url('reader/')}\nDisallow: ${url('profile/')}\nSitemap: ${canonical('sitemap.xml')}\n`);
+const indexableRoutes = [...allRoutes].filter(route => !['admin/', 'author-dashboard/', 'authors/', 'activate/', 'login/', 'reader/', 'profile/'].includes(route));
 fs.writeFileSync(path.join(output, 'sitemap.xml'), sitemap([...indexableRoutes, 'search-index.json']));
 console.log(`Built ${posts.length} published articles and ${allRoutes.size} routes into dist/`);
 
@@ -384,7 +387,7 @@ function card(post, index = 0) {
     </article>`;
 }
 function renderLayout(route, title, description, content, options = {}) {
-  const dashboardStyles = ['admin/', 'author-dashboard/', 'authors/', 'activate/'].includes(route)
+  const dashboardStyles = ['admin/', 'author-dashboard/', 'authors/', 'activate/', 'login/', 'reader/', 'profile/'].includes(route)
     ? `<link rel="stylesheet" href="${url('admin/admin.css')}">`
     : '';
   const searchDialog = route === 'search/' ? '' : `
@@ -425,6 +428,7 @@ function renderLayout(route, title, description, content, options = {}) {
         <link rel="stylesheet" href="assets/css/motion-responsive.css">
         <link rel="stylesheet" href="assets/css/publishing.css">
         <link rel="stylesheet" href="assets/css/editorial.css">
+        <link rel="stylesheet" href="assets/css/accounts.css">
         <link rel="stylesheet" href="assets/css/wireframe.css">
         <link rel="stylesheet" href="assets/css/mobile.css?v=20261020-mobile-related-v6">
         ${dashboardStyles}
@@ -445,6 +449,7 @@ function renderLayout(route, title, description, content, options = {}) {
             <a class="nav-link" href="${url('reflections/')}">Reflections</a>
             <a class="nav-link" href="${url('about/')}">About</a>
             <a class="nav-link" href="${url('contact/')}">Contact</a>
+            <a class="nav-link" href="${url('login/')}">Sign in</a>
             <button class="search-open" aria-label="Search Inkverelle">
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <circle cx="10.8" cy="10.8" r="6.6"></circle>
@@ -472,6 +477,7 @@ function renderLayout(route, title, description, content, options = {}) {
               <a href="${url('reading-list/')}">Reading list</a>
               <a href="${url('contact/')}">Contact</a>
               <a href="${url('authors/')}">For authors</a>
+              <a href="${url('login/')}">Sign in</a>
             </div>
             <span>An independent literary journal.</span>
           </div>
