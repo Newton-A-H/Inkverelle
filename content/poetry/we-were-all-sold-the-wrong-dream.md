@@ -1,5 +1,6 @@
 ---
 title: "We Were All Sold the Wrong Dream"
+author: "Newton Hinga"
 slug: we-were-all-sold-the-wrong-dream
 category: poetry
 date: 2026-10-26

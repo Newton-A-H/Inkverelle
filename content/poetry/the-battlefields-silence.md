@@ -1,5 +1,6 @@
 ---
 title: "The Battlefield’s Silence"
+author: "Newton Hinga"
 slug: the-battlefields-silence
 category: poetry
 date: 2026-10-20

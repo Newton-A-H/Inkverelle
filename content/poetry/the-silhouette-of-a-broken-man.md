@@ -1,5 +1,6 @@
 ---
 title: "The Silhouette of a Broken Man"
+author: "Newton Hinga"
 slug: the-silhouette-of-a-broken-man
 category: poetry
 date: 2026-10-20

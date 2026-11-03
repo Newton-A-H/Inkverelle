@@ -113,7 +113,7 @@ function renderReadingList() {
   }
 }
 
-document.addEventListener('click', event => {
+document.addEventListener('click', async event => {
   const bookmark = event.target.closest('[data-bookmark-slug]');
   if (bookmark) {
     const slug = bookmark.dataset.bookmarkSlug;
@@ -124,18 +124,18 @@ document.addEventListener('click', event => {
   }
   const remove = event.target.closest('[data-remove-slug]');
   if (remove) writeSavedSlugs(getSavedSlugs().filter(slug => slug !== remove.dataset.removeSlug));
-});
-
-document.querySelectorAll('.copy-link').forEach(button => button.addEventListener('click', async () => {
-  const original = button.textContent;
-  try {
-    await navigator.clipboard.writeText(button.dataset.copyUrl || location.href);
-    button.textContent = 'Link copied';
-  } catch {
-    button.textContent = 'Couldn’t copy the link';
+  const copy = event.target.closest('.copy-link');
+  if (copy) {
+    const original = copy.textContent;
+    try {
+      await navigator.clipboard.writeText(copy.dataset.copyUrl || location.href);
+      copy.textContent = 'Link copied';
+    } catch {
+      copy.textContent = 'Couldn’t copy the link';
+    }
+    window.setTimeout(() => { copy.textContent = original; }, 1800);
   }
-  window.setTimeout(() => { button.textContent = original; }, 1800);
-}));
+});
 
 function renderSearchResults() {
   if (!searchResults || !searchInput) return;
@@ -165,13 +165,230 @@ function renderSearchResults() {
   }
 }
 
-fetch('search-index.json')
+function readDate(value) {
+  const parsed = new Date(`${value}T12:00:00`);
+  return Number.isNaN(parsed.getTime()) ? value : new Intl.DateTimeFormat('en', { month: 'long', day: 'numeric', year: 'numeric' }).format(parsed);
+}
+
+function tagSlug(value) {
+  return String(value).toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+function appendInlineWriting(target, text) {
+  for (const part of String(text).split(/(\*\*[^*]+\*\*)/g)) {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      const strong = document.createElement('strong');
+      strong.textContent = part.slice(2, -2);
+      target.append(strong);
+    } else target.append(document.createTextNode(part));
+  }
+}
+
+function makeWritingCard(item, index) {
+  const card = document.createElement('article');
+  card.className = 'writing-card';
+  const link = document.createElement('a');
+  link.className = 'writing-card-link';
+  link.href = item.dynamic
+    ? new URL(`read/?slug=${encodeURIComponent(item.slug)}`, document.baseURI).href
+    : new URL(item.url, document.baseURI).href;
+  link.setAttribute('aria-label', `Read ${item.title}`);
+  const art = document.createElement('div');
+  art.className = `card-art art-${index % 6 + 1}`;
+  const tag = document.createElement('span');
+  tag.className = 'art-tag';
+  tag.textContent = item.category;
+  art.append(tag);
+  const info = document.createElement('div');
+  info.className = 'card-info';
+  const date = document.createElement('span');
+  date.className = 'card-date';
+  date.textContent = readDate(item.date);
+  const title = document.createElement('h3');
+  title.textContent = item.title;
+  const author = document.createElement('span');
+  author.className = 'card-author';
+  author.textContent = `By ${item.author || 'Newton Hinga'}`;
+  const excerpt = document.createElement('p');
+  excerpt.textContent = item.excerpt;
+  const footer = document.createElement('div');
+  footer.className = 'card-footer';
+  const duration = document.createElement('span');
+  duration.textContent = item.read || '1 min read';
+  const read = document.createElement('span');
+  read.textContent = 'READ ↗';
+  footer.append(duration, read);
+  info.append(date, title, author, excerpt, footer);
+  link.append(art, info);
+  card.append(link);
+  return card;
+}
+
+function renderDynamicArticle(posts, allSearchItems) {
+  const target = document.querySelector('#dynamic-article');
+  if (!target) return;
+  const slug = new URL(location.href).searchParams.get('slug');
+  const post = posts.find(item => item.slug === slug);
+  target.replaceChildren();
+  if (!post) {
+    const missing = document.createElement('div');
+    missing.className = 'section-wrap static-page';
+    const title = document.createElement('h1');
+    title.textContent = 'This piece is not available.';
+    const back = document.createElement('a');
+    back.className = 'text-link';
+    back.href = new URL('./', document.baseURI).href;
+    back.textContent = 'Back to Inkverelle ↗';
+    missing.append(title, back);
+    target.append(missing);
+    return;
+  }
+
+  document.title = `${post.title} — Inkverelle`;
+  const descriptionMeta = document.querySelector('meta[name="description"]');
+  if (descriptionMeta) descriptionMeta.content = post.excerpt;
+  const canonicalLink = document.querySelector('link[rel="canonical"]');
+  if (canonicalLink) canonicalLink.href = location.href;
+  const article = document.createElement('article');
+  article.className = 'reading-column';
+  const back = document.createElement('a');
+  back.className = 'back-link';
+  back.href = new URL(`${post.category}/`, document.baseURI).href;
+  back.textContent = `← Back to ${post.category}`;
+  const label = document.createElement('p');
+  label.className = 'eyebrow article-category';
+  label.textContent = `${post.category} · ${readDate(post.date)}`;
+  const title = document.createElement('h1');
+  title.textContent = post.title;
+  const excerpt = document.createElement('p');
+  excerpt.className = 'article-subtitle';
+  excerpt.textContent = post.excerpt;
+  const byline = document.createElement('div');
+  byline.className = 'article-byline';
+  byline.textContent = `By ${post.author || 'Newton Hinga'} · ${post.read}`;
+  const body = document.createElement('div');
+  body.className = `article-body${post.poem ? ' poetry-body' : ''}`;
+  for (const paragraph of String(post.body || '').trim().split(/\n\s*\n/).filter(Boolean)) {
+    const block = document.createElement('p');
+    if (post.poem) block.className = 'poem-stanza';
+    paragraph.split('\n').forEach((line, index) => {
+      if (index) block.append(document.createElement('br'));
+      appendInlineWriting(block, line);
+    });
+    body.append(block);
+  }
+  const actions = document.createElement('div');
+  actions.className = 'article-actions';
+  const bookmark = document.createElement('button');
+  bookmark.type = 'button';
+  bookmark.className = 'bookmark-toggle';
+  bookmark.dataset.bookmarkSlug = post.slug;
+  bookmark.setAttribute('aria-pressed', 'false');
+  bookmark.textContent = 'Save for later';
+  const copy = document.createElement('button');
+  copy.type = 'button';
+  copy.className = 'copy-link';
+  copy.dataset.copyUrl = location.href;
+  copy.textContent = 'Copy link';
+  const more = document.createElement('a');
+  more.href = back.href;
+  more.textContent = `More ${post.category} ↗`;
+  actions.append(bookmark, copy, more);
+  const taxonomy = document.createElement('nav');
+  taxonomy.className = 'article-taxonomy';
+  taxonomy.setAttribute('aria-label', 'Article categories and tags');
+  for (const tag of [post.category, ...(post.tags || [])]) {
+    const chip = document.createElement('a');
+    chip.className = 'article-tag';
+    chip.textContent = tag;
+    chip.href = new URL(`${tag === post.category ? `${post.category}/` : `tag/${tagSlug(tag)}/`}`, document.baseURI).href;
+    taxonomy.append(chip);
+  }
+  article.append(back, label, title, excerpt, byline, body, actions, taxonomy);
+  target.append(article);
+
+  const relatedSection = document.querySelector('#dynamic-related-section');
+  const relatedGrid = document.querySelector('#dynamic-related');
+  const related = allSearchItems.filter(item => item.slug !== post.slug && String(item.category).toLowerCase() === post.category).slice(0, 3);
+  if (relatedSection && relatedGrid && related.length) {
+    relatedGrid.replaceChildren(...related.map((item, index) => makeWritingCard(item, index)));
+    relatedSection.hidden = false;
+  }
+}
+
+function renderDynamicCards(posts, allSearchItems) {
+  const homeTargets = { stories: '#stories-grid', poetry: '#poetry-grid', reflections: '#reflections-grid' };
+  const path = decodeURIComponent(location.pathname).replace(/\/$/, '').split('/').filter(Boolean).pop() || '';
+  const archiveCategory = ['stories', 'poetry', 'reflections'].includes(path) ? path : null;
+  const categoryPage = location.pathname.includes('/category/') ? path.toLowerCase() : archiveCategory;
+  const tagPage = location.pathname.includes('/tag/') ? path : null;
+
+  for (const post of posts) {
+    const homeGrid = document.querySelector(homeTargets[post.category]);
+    if (homeGrid) homeGrid.append(makeWritingCard({ ...post, dynamic: true }, homeGrid.children.length));
+  }
+
+  if (categoryPage) {
+    const grid = document.querySelector('.collection-page .writing-grid');
+    const matching = posts.filter(post => post.category === categoryPage);
+    if (grid && matching.length) {
+      grid.querySelector('.archive-empty')?.remove();
+      matching.forEach(post => grid.append(makeWritingCard({ ...post, dynamic: true }, grid.children.length)));
+    }
+  }
+
+  if (tagPage) {
+    const grid = document.querySelector('.collection-page .writing-grid');
+    const matching = posts.filter(post => (post.tags || []).some(tag => tagSlug(tag) === tagPage));
+    if (grid && matching.length) {
+      grid.querySelector('.archive-empty')?.remove();
+      matching.forEach(post => grid.append(makeWritingCard({ ...post, dynamic: true }, grid.children.length)));
+    }
+  }
+
+  const latest = document.querySelector('.latest-list');
+  if (latest) {
+    const current = posts.slice(0, 5).map(post => {
+      const link = document.createElement('a');
+      link.className = 'latest-item';
+      link.href = new URL(`read/?slug=${encodeURIComponent(post.slug)}`, document.baseURI).href;
+      const category = document.createElement('span');
+      category.className = 'latest-category';
+      category.textContent = post.category;
+      const title = document.createElement('strong');
+      title.textContent = post.title;
+      const date = document.createElement('time');
+      date.dateTime = post.date;
+      date.textContent = readDate(post.date);
+      link.append(category, title, date);
+      return link;
+    });
+    latest.prepend(...current);
+    while (latest.children.length > 5) latest.lastElementChild.remove();
+  }
+}
+
+fetch(new URL('search-index.json', document.baseURI))
   .then(response => {
     if (!response.ok) throw new Error('Search index unavailable');
     return response.json();
   })
-  .then(data => {
-    searchIndex = Array.isArray(data) ? data : [];
+  .then(async data => {
+    const staticItems = Array.isArray(data) ? data : [];
+    let dynamicPosts = [];
+    try {
+      const response = await fetch(new URL('api/posts', document.baseURI), { headers: { Accept: 'application/json' } });
+      if (response.ok) {
+        const payload = await response.json();
+        dynamicPosts = Array.isArray(payload.posts)
+          ? payload.posts.filter(post => ['approved', 'published'].includes(String(post.status).toLowerCase()))
+          : [];
+      }
+    } catch { /* The static GitHub Pages version has no dynamic API. */ }
+    const dynamicItems = dynamicPosts.map(post => ({ ...post, dynamic: true, category: post.category, url: `read/?slug=${encodeURIComponent(post.slug)}` }));
+    searchIndex = [...staticItems, ...dynamicItems];
+    renderDynamicCards(dynamicPosts, searchIndex);
+    renderDynamicArticle(dynamicPosts, searchIndex);
     updateBookmarkButtons();
     renderReadingList();
     renderSearchResults();

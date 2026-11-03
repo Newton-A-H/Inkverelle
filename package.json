@@ -2,11 +2,29 @@
   "name": "inkverelle",
   "private": true,
   "version": "1.0.0",
-  "description": "A static literary journal, built for GitHub Pages.",
+  "type": "module",
+  "description": "A full-stack literary journal for Vercel.",
   "scripts": {
-    "build": "node scripts/build.mjs"
+    "build": "node scripts/build.mjs",
+    "test": "node --test",
+    "postinstall": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:studio": "prisma studio",
+    "dev": "npm run build && node scripts/serve-static.mjs",
+    "vercel:dev": "vercel dev"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.0.0",
+    "@prisma/client": "^7.0.0",
+    "dotenv": "^16.4.7",
+    "pg": "^8.16.0"
+  },
+  "devDependencies": {
+    "prisma": "^7.0.0",
+    "vercel": "^65.9.0"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=20.19"
   }
 }

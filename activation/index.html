@@ -1,0 +1,16 @@
+<main class="section-wrap static-page author-access-page">
+  <p class="eyebrow">AUTHOR ACCESS</p>
+  <h1>Set your password</h1>
+  <p>Choose a strong password to activate your Inkverelle author account. Invitation links work once and expire after three days.</p>
+  <p class="admin-message" id="activation-message" role="status" aria-live="polite"></p>
+  <form class="admin-panel admin-form" id="activation-form">
+    <label for="new-password">Password<input id="new-password" name="password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required><small>At least 12 characters with upper- and lowercase letters, a number, and a symbol.</small></label>
+    <label for="confirm-password">Confirm password<input id="confirm-password" name="confirmation" type="password" autocomplete="new-password" minlength="12" maxlength="128" required></label>
+    <label class="consent-check" for="activation-terms">
+      <input id="activation-terms" name="termsAccepted" type="checkbox" required>
+      <span>I have read and agree to the <a href="terms/">Contributor Terms</a>.</span>
+    </label>
+    <div class="admin-actions"><button type="submit">Activate account</button></div>
+  </form>
+</main>
+<script src="assets/js/activation.js" defer></script>

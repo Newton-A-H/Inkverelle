@@ -1,5 +1,6 @@
 ---
 title: "The Letter I Wrote to October"
+author: "Newton Hinga"
 slug: the-letter-i-wrote-to-october
 category: reflections
 date: 2026-10-20

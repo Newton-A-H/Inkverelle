@@ -1,64 +1,96 @@
 # Inkverelle
 
-Inkverelle is a responsive journal for poems, stories, and reflections. The writing lives in this repository as Markdown files. A small Node script turns them into the site. There’s no database or paid service to set up.
+Inkverelle is a literary journal for poems, stories, and reflections. Anyone can read approved work without an account. Authors can request access, submit writing for editorial review, and see the status of their submissions. The editor can approve or reject account requests and writing.
 
-## Publish with GitHub Pages
+## How publishing works
 
-1. Create a GitHub repository and push this folder to its `main` branch.
-2. In the repository, open **Settings → Pages** and set the build and deployment source to **GitHub Actions**.
-3. The workflow in `.github/workflows/pages.yml` builds `dist/` and deploys it after each push to `main`. You can also start it from **Actions → Build and deploy Inkverelle → Run workflow**.
+1. A prospective author requests an account at `/authors/` and accepts the contributor terms.
+2. An administrator reviews the request. Approving it creates an inactive account and a one-time invitation link that expires after three days.
+3. The administrator can send an invitation from the dashboard. If email is not configured or delivery fails, the dashboard provides a one-time link to send manually.
+4. The author sets a password and signs in at `/authors/`.
+5. New submissions are private drafts or wait for editorial review. Only writing an administrator approves is available publicly.
 
-For a public site, GitHub Pages is available on GitHub Free when the repository is public. A Pages site is publicly viewable even when its source repository is private. Check the current GitHub Pages plan details before choosing repository visibility.
+The original Markdown writing in `content/` remains public site content. Each current piece credits Newton Hinga. Add an `author` field to future Markdown front matter to credit another author.
 
-## Add or edit writing
+## Vercel and PostgreSQL setup
 
-Add a `.md` file to `content/poetry/`, `content/stories/`, or `content/reflections/`. Copy this example, fill in your details, and put the writing below the second `---` line:
+Use a managed PostgreSQL database connected to the Vercel project, such as Prisma Postgres or Neon through the Vercel Marketplace.
 
-```yaml
----
-title: "A new poem"
-slug: a-new-poem
-category: poetry
-date: 2026-10-19
-excerpt: "A few words about this poem."
-readingTime: "3 min read"
-poem: true
-tags: ["memory", "home"]
-status: published
----
+Set the following environment variables in Vercel:
 
-Write one line per verse.
-Leave a blank line between stanzas.
-```
+- `DATABASE_URL`: direct PostgreSQL connection string. Prisma CLI uses this for migrations.
+- `DATABASE_URL_POOLED`: pooled connection string for Vercel Functions.
+- `BOOTSTRAP_ADMIN_EMAIL`: email address for the first administrator.
+- `BOOTSTRAP_ADMIN_NAME`: display name for the first administrator.
+- `BOOTSTRAP_ADMIN_PASSWORD`: unique password for the first administrator. Use 12–128 characters with uppercase and lowercase letters, a number, and a symbol.
+- `ADMIN_SESSION_SECRET`: at least 32 random bytes, encoded as text.
+- `CRON_SECRET`: a unique secret used to authorize the daily retention job.
+- `RESEND_API_KEY`: Resend sending-only API key, restricted to the verified sender domain.
+- `EMAIL_FROM`: verified sender address, for example `Inkverelle <hello@your-domain.example>`.
+- `ADMIN_NOTIFICATION_EMAIL`: email address for new account-request notices.
+- `PUBLIC_SITE_URL`: canonical HTTPS origin used to build invitation links.
 
-For a poem, set `poem: true` so its lines and stanzas stay in place. To keep a piece off the site, set `status: draft`. If this repository is public, the draft file can still be seen on GitHub, so don’t put private writing here. Merge the file into `main` to publish it. GitHub keeps earlier versions if you ever need to restore an edit.
+The first successful sign-in using the bootstrap email and password creates the administrator account. Keep these bootstrap credentials private. Once that account exists, change or remove the bootstrap password environment variable; do not use it as an ongoing shared login.
 
-Edit `content/site.json` to change the site name, tagline, About text, contact email, social links, or featured piece. Search includes published writing. A reader’s saved list stays in their browser and doesn’t sync to other devices. The site doesn’t include a newsletter signup, private editor login, or inbox for contact messages; those need an additional service.
+## Email delivery
 
-## Preview locally
+Inkverelle sends account-request notices to `ADMIN_NOTIFICATION_EMAIL` (or the bootstrap admin address), and sends account invitations and password reset links to authors using Resend. Create a Resend sending-only API key restricted to your verified sender domain, then configure `RESEND_API_KEY`, `EMAIL_FROM`, `ADMIN_NOTIFICATION_EMAIL`, and `PUBLIC_SITE_URL` in the production environment. Verify the sender domain's DNS records in Resend before testing delivery. If any setting is missing or Resend is unavailable, invitation and reset flows return a manual one-time link instead.
 
-Install Node.js 20 or newer, then run:
+Resend receives recipient email addresses and the one-time invitation or reset URL for those messages. The privacy page describes this transfer; review Resend's current [privacy policy](https://resend.com/legal/privacy-policy), [data processing addendum](https://resend.com/legal/dpa), and subprocessors before launch.
+
+Before the first deployment, install dependencies and apply the database migration:
 
 ```sh
+npm install
+npm run db:deploy
 npm run build
 ```
 
-To preview the generated `dist/` folder, run a static server from that folder, for example:
+Connect the project to the database before running migrations. Keep `DATABASE_URL` direct and use the provider's pooled URL in `DATABASE_URL_POOLED`. Vercel Functions use the pooled connection; Prisma migration commands use the direct one.
+
+For local development, copy `.env.example` to `.env`, fill in development database credentials and unique local secrets, then run:
 
 ```sh
-cd dist
-python -m http.server 8000
+npm install
+npm run db:migrate
+npm run vercel:dev
 ```
 
-Then visit `http://localhost:8000`. The build also creates article pages, story/poetry/reflection archives, tag and category pages, About, Contact, search, a local reading list, a 404 page, `sitemap.xml`, and `robots.txt`.
+`npm run vercel:dev` runs Vercel's local Functions server and requires the Vercel CLI login and a linked Vercel project. The Vercel Development Command is `npm run dev`, which builds the static pages and starts their local server; it does not launch Vercel again. For a static-only preview without API routes, run `npm run dev` directly. Do not use production credentials for local development. `npm run db:studio` opens Prisma Studio for inspecting the connected database; treat that access as privileged.
+
+## Security and account operations
+
+Passwords are hashed with scrypt and a per-password random salt. Sessions use random, database-backed tokens stored only as hashes, HttpOnly and SameSite cookies, CSRF checks, role-based authorization, and login throttling. Account invitations are stored as hashes, expire after three days, and can only be used once. The database migration is in `prisma/migrations/`.
+
+Administrators must enroll an authenticator app the first time they sign in. MFA uses time-based one-time passwords, encrypts the secret with a key derived from `ADMIN_SESSION_SECRET`, and generates single-use recovery codes. Store recovery codes securely. Keep `ADMIN_SESSION_SECRET` stable: changing it requires MFA to be set up again after a controlled database reset. Admin account and moderation endpoints require both a valid session and completed MFA.
+
+Rejected account requests are automatically deleted after 12 months from their review date. A daily Vercel Cron invokes `/api/cron/retention`; set a unique `CRON_SECRET` in the Vercel project before deployment. The job deletes only rejected requests and leaves pending and approved requests untouched. Vercel Cron jobs run only on production deployments.
+
+Email delivery uses Resend when its environment variables are configured. Invitation and reset links remain available in the dashboard whenever delivery fails or is not configured.
+
+Run the dependency-free security helper tests with `npm test`. These cover the TOTP algorithm and recovery-code utilities; they do not replace deployment testing against a configured PostgreSQL database.
+
+Administrators sign in at `/admin/`. They can review account requests, create invitations, suspend authors, and approve or reject submissions. Authors sign in at `/authors/` and manage their own writing at `/author-dashboard/`.
+
+The contributor terms record agreement to a free-to-read, non-exclusive publishing permission; contributors retain their copyright. No wording can guarantee protection from every lawsuit or override rights that cannot legally be waived. The terms and privacy notice are a starting point and should be reviewed by a Kenyan lawyer before relying on them. The privacy notice should also be checked against the actual database provider, data location, retention practices, and applicable registration obligations.
+
+## GitHub Pages
+
+GitHub Pages can publish the static site, but it cannot run the account, moderation, or database APIs. Use the Vercel deployment for author accounts and reviewed publishing. Source files and Markdown content in a public GitHub repository are public.
 
 ## Project layout
 
 ```text
-content/             Markdown articles and site settings
-assets/css/          Site styles, layout, and motion
-assets/js/           Search, mobile navigation, and small interactions
-assets/images/       Inkverelle logo artwork
-scripts/build.mjs    Static site generator
-.github/workflows/   GitHub Pages deployment workflow
+content/                 Site settings and original Markdown writing
+assets/css/              Site styles and responsive layouts
+assets/js/               Public interactions and account dashboards
+api/                     Vercel authentication, accounts, and writing APIs
+lib/                     Prisma, password, session, and security helpers
+prisma/schema.prisma     Relational data model
+prisma/migrations/       PostgreSQL schema migration
+scripts/build.mjs        Static page generator
+admin/                   Administrator dashboard page
+authors/                 Author sign-in and account request page
+activation/              One-time invitation activation page
+vercel.json              Vercel output and security headers
 ```

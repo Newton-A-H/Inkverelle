@@ -1,5 +1,6 @@
 ---
 title: "The Sentinel of the Hollow Crown"
+author: "Newton Hinga"
 slug: the-sentinel-of-the-hollow-crown
 category: poetry
 date: 2026-10-30

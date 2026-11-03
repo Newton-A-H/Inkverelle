@@ -1,5 +1,6 @@
 ---
 title: "A Broken Man I Am"
+author: "Newton Hinga"
 slug: a-broken-man-i-am
 category: poetry
 date: 2026-10-20

@@ -1,7 +1,49 @@
-.archive-section{padding-top:86px;padding-bottom:96px}
-.archive-section .writing-grid{padding-top:30px}
-.poetry-archive{background:#f7f4ee}
-.reflections-archive{background:#eae5dc}
-.poetry-archive .section-heading .add-poem-button{color:var(--wine);border-color:#bcaeb0;margin:0 0 4px}
-.poetry-archive .section-heading .add-poem-button:hover{color:#4f343b;border-color:var(--wine)}
-@media(max-width:600px){.archive-section{padding-top:66px;padding-bottom:72px}.archive-section .writing-grid{padding-top:23px}.poetry-archive .section-heading{align-items:flex-end;gap:12px}.poetry-archive .section-heading h2{max-width:280px}.poetry-archive .section-heading .add-poem-button{white-space:nowrap;font-size:9px}}
+.archive-section {
+  padding-top:86px;
+  padding-bottom:96px
+}
+.archive-section .writing-grid {
+  padding-top:30px
+}
+.poetry-archive {
+  background:#f7f4ee
+}
+.reflections-archive {
+  background:#eae5dc
+}
+.card-author {
+  display:block;
+  margin:-2px 0 12px;
+  color:#69776e;
+  font-size:11px;
+  letter-spacing:.02em
+}
+.poetry-archive .section-heading .add-poem-button {
+  color:var(--wine);
+  border-color:#bcaeb0;
+  margin:0 0 4px
+}
+.poetry-archive .section-heading .add-poem-button:hover {
+  color:#4f343b;
+  border-color:var(--wine)
+}
+@media(max-width:600px) {
+  .archive-section {
+    padding-top:66px;
+    padding-bottom:72px
+  }
+  .archive-section .writing-grid {
+    padding-top:23px
+  }
+  .poetry-archive .section-heading {
+    align-items:flex-end;
+    gap:12px
+  }
+  .poetry-archive .section-heading h2 {
+    max-width:280px
+  }
+  .poetry-archive .section-heading .add-poem-button {
+    white-space:nowrap;
+    font-size:9px
+  }
+}

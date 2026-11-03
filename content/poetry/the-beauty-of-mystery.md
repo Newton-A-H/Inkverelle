@@ -1,5 +1,6 @@
 ---
 title: "The Beauty of Mystery"
+author: "Newton Hinga"
 slug: the-beauty-of-mystery
 category: poetry
 date: 2026-10-19

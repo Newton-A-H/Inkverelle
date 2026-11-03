@@ -1,5 +1,6 @@
 ---
 title: "You Will Always Be My Lilith"
+author: "Newton Hinga"
 slug: you-will-always-be-my-lilith
 category: poetry
 date: 2026-10-20

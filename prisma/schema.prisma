@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+  engineType = "client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  AUTHOR
+}
+
+enum AccountRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PostStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum WritingCategory {
+  POETRY
+  STORIES
+  REFLECTIONS
+}
+
+model User {
+  id                 String          @id @default(cuid())
+  email              String          @unique
+  name               String
+  passwordHash       String?
+  mfaSecretEncrypted String?
+  mfaEnabledAt       DateTime?
+  totpRecoveryHashes String[]        @default([])
+  role               UserRole        @default(AUTHOR)
+  active             Boolean         @default(false)
+  termsAcceptedAt    DateTime?
+  termsVersion       String?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  posts              Post[]
+  sessions           Session[]
+  invitation          Invitation?
+  accountRequest      AccountRequest? @relation("RequestUser")
+  reviewedRequests   AccountRequest[] @relation("RequestReviewer")
+  reviewedPosts      Post[]            @relation("PostReviewer")
+}
+
+model AccountRequest {
+  id          String               @id @default(cuid())
+  email       String
+  name        String
+  reason      String               @db.VarChar(1000)
+  status      AccountRequestStatus @default(PENDING)
+  termsVersion String
+  requestedAt DateTime             @default(now())
+  reviewedAt  DateTime?
+  userId      String?              @unique
+  user        User?                @relation("RequestUser", fields: [userId], references: [id], onDelete: SetNull)
+  reviewerId  String?
+  reviewer    User?                @relation("RequestReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+
+  @@index([status, requestedAt])
+  @@index([email, status])
+}
+
+model Invitation {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  userId    String    @unique
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model Session {
+  id               String   @id @default(cuid())
+  tokenHash        String   @unique
+  csrfTokenHash    String
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt        DateTime
+  createdAt        DateTime @default(now())
+  lastSeenAt       DateTime @default(now())
+  mfaVerifiedAt    DateTime?
+
+  @@index([userId, expiresAt])
+  @@index([expiresAt])
+}
+
+model Post {
+  id             String          @id @default(cuid())
+  slug           String          @unique
+  title          String          @db.VarChar(140)
+  category       WritingCategory
+  date           DateTime        @db.Date
+  excerpt        String          @db.VarChar(320)
+  body           String          @db.Text
+  tags           String[]        @default([])
+  status         PostStatus      @default(PENDING_REVIEW)
+  rejectionNote  String?         @db.VarChar(1000)
+  authorId       String
+  author         User            @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  reviewedById   String?
+  reviewedBy     User?           @relation("PostReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedAt     DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([status, category, date(sort: Desc)])
+  @@index([authorId, status, updatedAt(sort: Desc)])
+}
+
+model LoginRateLimit {
+  keyHash         String   @id
+  attempts        Int      @default(0)
+  windowStartedAt DateTime @default(now())
+  blockedUntil    DateTime?
+  updatedAt       DateTime @updatedAt
+
+  @@index([updatedAt])
+}

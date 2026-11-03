@@ -1,5 +1,6 @@
 ---
 title: "The Knight Who Chose Peace"
+author: "Newton Hinga"
 slug: the-knight-who-chose-peace
 category: poetry
 date: 2026-10-19

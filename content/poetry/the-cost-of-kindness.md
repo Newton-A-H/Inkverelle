@@ -1,5 +1,6 @@
 ---
 title: "The Cost of Kindness"
+author: "Newton Hinga"
 slug: the-cost-of-kindness
 category: poetry
 date: 2026-10-20

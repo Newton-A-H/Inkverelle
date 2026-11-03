@@ -1,5 +1,6 @@
 ---
 title: "A map of the things we carry"
+author: "Newton Hinga"
 slug: a-map-of-the-things-we-carry
 category: stories
 date: 2026-10-03

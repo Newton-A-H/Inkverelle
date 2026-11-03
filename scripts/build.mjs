@@ -4,18 +4,26 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const output = path.join(root, 'dist');
+const termsVersion = '2026-10-31';
 const basePath = normalizeBase(process.env.SITE_BASE_PATH || '/');
-const siteUrl = (process.env.SITE_URL || 'http://localhost:8000').replace(/\/$/, '');
+const vercelProductionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
+const siteUrl = (process.env.SITE_URL || (vercelProductionHost ? `https://${vercelProductionHost}` : 'http://localhost:8000')).replace(/\/$/, '');
 const site = JSON.parse(fs.readFileSync(path.join(root, 'content/site.json'), 'utf8'));
 const facebookUrl = site.facebookUrl || (site.facebookName
   ? `https://www.facebook.com/search/top/?q=${encodeURIComponent(site.facebookName)}`
   : 'https://www.facebook.com/');
-const footerSocialLinks = `<div class="footer-social" aria-label="Contact and social links"><a href="mailto:${escapeAttribute(site.contactEmail || '')}">Email ↗</a><a href="${escapeAttribute(facebookUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Visit ${escapeAttribute(site.facebookName || site.name)} on Facebook">Facebook · ${escapeHTML(site.facebookName || site.name)} ↗</a></div>`;
+const footerSocialLinks = `
+  <div class="footer-social" aria-label="Contact and social links">
+    <a href="mailto:${escapeAttribute(site.contactEmail || '')}">Email ↗</a>
+    <a href="${escapeAttribute(facebookUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Visit ${escapeAttribute(site.facebookName || site.name)} on Facebook">
+      Facebook · ${escapeHTML(site.facebookName || site.name)} ↗
+    </a>
+  </div>`;
 const posts = loadPosts().filter(post => post.status === 'published' && post.date <= today());
 if (!posts.length) throw new Error('No published writing found in content/');
 const duplicateSlugs = duplicates(posts.map(post => post.slug));
 if (duplicateSlugs.length) throw new Error(`Duplicate slugs: ${duplicateSlugs.join(', ')}`);
-const allRoutes = new Set(['', 'stories/', 'poetry/', 'reflections/', 'about/', 'contact/', 'search/', 'reading-list/', 'privacy/']);
+const allRoutes = new Set(['', 'stories/', 'poetry/', 'reflections/', 'about/', 'contact/', 'authors/', 'activate/', 'author-dashboard/', 'admin/', 'terms/', 'search/', 'read/', 'reading-list/', 'privacy/']);
 for (const post of posts) allRoutes.add(`${post.slug}/`);
 for (const category of new Set(posts.map(post => post.category))) allRoutes.add(`category/${slugify(category)}/`);
 for (const tag of new Set(posts.flatMap(post => post.tags))) allRoutes.add(`tag/${slugify(tag)}/`);
@@ -23,6 +31,8 @@ for (const tag of new Set(posts.flatMap(post => post.tags))) allRoutes.add(`tag/
 fs.rmSync(output, { recursive: true, force: true });
 fs.mkdirSync(output, { recursive: true });
 fs.cpSync(path.join(root, 'assets'), path.join(output, 'assets'), { recursive: true });
+fs.mkdirSync(path.join(output, 'admin'), { recursive: true });
+fs.copyFileSync(path.join(root, 'admin', 'admin.css'), path.join(output, 'admin', 'admin.css'));
 fs.writeFileSync(path.join(output, '.nojekyll'), '');
 
 const cardsByCategory = Object.fromEntries(['stories', 'poetry', 'reflections'].map(category => [category,
@@ -63,10 +73,11 @@ home = home
   .replace('An original poem · 14 min read', `${escapeHTML(capitalize(featured.category))} · ${escapeHTML(featured.read)}`)
   .replace('On noticing what the day leaves at your doorstep: light on the kitchen floor, the neighbor\'s lavender, a thought that finally found its way home.', escapeHTML(featured.excerpt))
   .replace('He was born beneath a blood-red sky,<br>Where mothers learned too young to cry,<br>Where fathers left with swords held high,<br>And children watched them disappear into the night.', escapeHTML(featured.poem ? featured.body[0] : featured.excerpt).replace(/\r?\n/g, '<br>'))
-  .replace('href="#stories">Stories</a><a href="#poetry">Poetry', `href="${url('stories/')}">Stories</a><a href="${url('poetry/')}">Poetry`)
-  .replace('href="#reflections">Reflections', `href="${url('reflections/')}">Reflections`)
-  .replace('href="#about">About', `href="${url('about/')}">About`)
-  .replace('</div><span>An independent literary journal.</span></div></footer>', `</div><a href="${url('contact/')}">Contact</a>${footerSocialLinks}<span>An independent literary journal.</span></div></footer>`)
+  .replace('href="#stories" class="nav-link"', `href="${url('stories/')}" class="nav-link"`)
+  .replace('href="#poetry" class="nav-link"', `href="${url('poetry/')}" class="nav-link"`)
+  .replace('href="#reflections" class="nav-link"', `href="${url('reflections/')}" class="nav-link"`)
+  .replace('href="#about" class="nav-link"', `href="${url('about/')}" class="nav-link"`)
+  .replace('{{HOME_FOOTER_CONTACT}}', `<a href="${url('contact/')}">Contact</a>${footerSocialLinks}`)
   .replace('</head>', `${headMetadata('', site.name, site.description)}</head>`);
 fs.writeFileSync(path.join(output, 'index.html'), home);
 
@@ -77,18 +88,37 @@ const archiveDescriptions = {
 };
 for (const category of ['stories', 'poetry', 'reflections']) {
   const route = `${category}/`;
-  writePage(route, `${capitalize(category)} — ${site.name}`, archiveDescriptions[category], `<main class="section-wrap collection-page"><p class="eyebrow">FROM INKVERELLE</p><h1>${capitalize(category)}</h1><p class="collection-intro">${escapeHTML(archiveDescriptions[category])}</p><div class="writing-grid">${cardsByCategory[category]}</div></main>`);
+  const content = `
+    <main class="section-wrap collection-page">
+      <p class="eyebrow">FROM INKVERELLE</p>
+      <h1>${capitalize(category)}</h1>
+      <p class="collection-intro">${escapeHTML(archiveDescriptions[category])}</p>
+      <div class="writing-grid">${cardsByCategory[category]}</div>
+    </main>`;
+  writePage(route, `${capitalize(category)} — ${site.name}`, archiveDescriptions[category], content);
 }
 for (const category of new Set(posts.map(post => post.category))) {
   const route = `category/${slugify(category)}/`;
   const matching = posts.filter(post => post.category === category);
-  writePage(route, `${capitalize(category)} — ${site.name}`, `Read ${capitalize(category).toLowerCase()} from Inkverelle.`, `<main class="section-wrap collection-page"><p class="eyebrow">BROWSE BY CATEGORY</p><h1>${capitalize(category)}</h1><div class="writing-grid">${matching.map(card).join('')}</div></main>`);
+  const content = `
+    <main class="section-wrap collection-page">
+      <p class="eyebrow">BROWSE BY CATEGORY</p>
+      <h1>${capitalize(category)}</h1>
+      <div class="writing-grid">${matching.map(card).join('')}</div>
+    </main>`;
+  writePage(route, `${capitalize(category)} — ${site.name}`, `Read ${capitalize(category).toLowerCase()} from Inkverelle.`, content);
 }
 const tagSet = new Set(posts.flatMap(post => post.tags));
 for (const tag of tagSet) {
   const route = `tag/${slugify(tag)}/`;
   const matching = posts.filter(post => post.tags.some(item => slugify(item) === slugify(tag)));
-  writePage(route, `“${tag}” — ${site.name}`, `Writing tagged ${tag}.`, `<main class="section-wrap collection-page"><p class="eyebrow">BROWSE BY TAG</p><h1>${escapeHTML(tag)}</h1><div class="writing-grid">${matching.map(card).join('')}</div></main>`);
+  const content = `
+    <main class="section-wrap collection-page">
+      <p class="eyebrow">BROWSE BY TAG</p>
+      <h1>${escapeHTML(tag)}</h1>
+      <div class="writing-grid">${matching.map(card).join('')}</div>
+    </main>`;
+  writePage(route, `“${tag}” — ${site.name}`, `Writing tagged ${tag}.`, content);
 }
 for (const [index, post] of posts.entries()) {
   const categoryUrl = url(`category/${slugify(post.category)}/`);
@@ -99,28 +129,182 @@ for (const [index, post] of posts.entries()) {
     : `<div class="article-body">${post.body.map(paragraph => renderParagraph(paragraph)).join('')}</div>`;
   const articleData = {
     '@context': 'https://schema.org', '@type': post.poem ? 'Poem' : 'Article', headline: post.title,
-    description: post.excerpt, datePublished: post.date, author: { '@type': 'Organization', name: site.authorName },
+    description: post.excerpt, datePublished: post.date, author: { '@type': 'Person', name: post.author || site.authorName },
     publisher: { '@type': 'Organization', name: site.name }, mainEntityOfPage: canonical(`${post.slug}/`)
   };
-  const article = `<main class="article-page"><article class="reading-column"><a class="back-link" href="${url(post.category + '/')}">← Back to ${escapeHTML(post.category)}</a><p class="eyebrow article-category"><a href="${categoryUrl}">${escapeHTML(post.category)}</a> · ${formatDate(post.date)}</p><h1>${escapeHTML(post.title)}</h1><p class="article-subtitle">${escapeHTML(post.excerpt)}</p><div class="article-byline">${escapeHTML(site.authorName)} <span>·</span> ${escapeHTML(post.read)}</div>${body}<div class="article-actions"><button type="button" class="bookmark-toggle" data-bookmark-slug="${escapeAttribute(post.slug)}" aria-pressed="false">Save for later</button><button type="button" class="copy-link" data-copy-url="${escapeAttribute(canonical(`${post.slug}/`))}">Copy link</button><a href="${url(post.category + '/')}">More ${escapeHTML(post.category)} ↗</a></div><nav class="article-taxonomy" aria-label="Article categories and tags"><a href="${categoryUrl}">${escapeHTML(post.category)}</a>${tags}</nav></article></main><section class="related-section section-wrap"><p class="eyebrow">MORE TO READ</p><h2>More from Inkverelle</h2><div class="writing-grid">${related.map(card).join('') || `<a class="text-link" href="${url(post.category + '/')}">See all ${escapeHTML(post.category)} <span>↗</span></a>`}</div></section><script type="application/ld+json">${safeJson(articleData)}</script>`;
+  const article = `
+    <main class="article-page">
+      <article class="reading-column">
+        <a class="back-link" href="${url(post.category + '/')}">← Back to ${escapeHTML(post.category)}</a>
+        <p class="eyebrow article-category">
+          <a href="${categoryUrl}">${escapeHTML(post.category)}</a> · ${formatDate(post.date)}
+        </p>
+        <h1>${escapeHTML(post.title)}</h1>
+        <p class="article-subtitle">${escapeHTML(post.excerpt)}</p>
+        <div class="article-byline">
+          By ${escapeHTML(post.author || site.authorName)} <span>·</span> ${escapeHTML(post.read)}
+        </div>
+        ${body}
+        <div class="article-actions">
+          <button type="button" class="bookmark-toggle" data-bookmark-slug="${escapeAttribute(post.slug)}" aria-pressed="false">Save for later</button>
+          <button type="button" class="copy-link" data-copy-url="${escapeAttribute(canonical(`${post.slug}/`))}">Copy link</button>
+          <a href="${url(post.category + '/')}">More ${escapeHTML(post.category)} ↗</a>
+        </div>
+        <nav class="article-taxonomy" aria-label="Article categories and tags">
+          <a href="${categoryUrl}">${escapeHTML(post.category)}</a>${tags}
+        </nav>
+      </article>
+    </main>
+    <section class="related-section section-wrap">
+      <p class="eyebrow">MORE TO READ</p>
+      <h2>More from Inkverelle</h2>
+      <div class="writing-grid">
+        ${related.map(card).join('') || `<a class="text-link" href="${url(post.category + '/')}">See all ${escapeHTML(post.category)} <span>↗</span></a>`}
+      </div>
+    </section>
+    <script type="application/ld+json">${safeJson(articleData)}</script>`;
   writePage(`${post.slug}/`, `${post.title} — ${site.name}`, post.excerpt, article, { type: 'article', image: post.coverImage || '' });
 }
 
-const aboutContent = `<main class="section-wrap static-page"><p class="eyebrow">ABOUT INKVERELLE</p><h1>${escapeHTML(site.aboutHeading || 'About Inkverelle')}</h1>${(site.aboutParagraphs || []).map(text => `<p>${escapeHTML(text)}</p>`).join('')}<h2>What you’ll find here</h2><p>Poems, stories, and reflections by Inkverelle and its contributors.</p>${(site.socialLinks || []).map(link => `<p><a href="${escapeAttribute(link.url)}" rel="me noopener">${escapeHTML(link.label)}</a></p>`).join('')}</main>`;
+const aboutContent = `
+  <main class="section-wrap static-page">
+    <p class="eyebrow">ABOUT INKVERELLE</p>
+    <h1>${escapeHTML(site.aboutHeading || 'About Inkverelle')}</h1>
+    ${(site.aboutParagraphs || []).map(text => `<p>${escapeHTML(text)}</p>`).join('')}
+    <h2>What you’ll find here</h2>
+    <p>Poems, stories, and reflections by Inkverelle and its contributors.</p>
+    ${(site.socialLinks || []).map(link => `
+      <p><a href="${escapeAttribute(link.url)}" rel="me noopener">${escapeHTML(link.label)}</a></p>`).join('')}
+  </main>`;
 writePage('about/', `About — ${site.name}`, `About ${site.name} and its writing.`, aboutContent);
 const contactContent = site.contactEmail
-  ? `<main class="section-wrap static-page contact-page"><p class="eyebrow">CONTACT</p><h1>Write to me.</h1><p class="contact-intro">Have a question or an idea to share? I would be glad to hear from you.</p><section class="contact-box" aria-label="Contact Inkverelle"><div class="contact-box-details"><p class="contact-box-label">EMAIL</p><a class="contact-email" href="mailto:${escapeAttribute(site.contactEmail)}">${escapeHTML(site.contactEmail)} <span>↗</span></a><a class="contact-social-link" href="${escapeAttribute(facebookUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Visit ${escapeAttribute(site.facebookName || site.name)} on Facebook"><span>FACEBOOK</span><strong>${escapeHTML(site.facebookName || 'Inkverelle')} ↗</strong></a><p class="contact-response-note">Your email app will open with your message ready. You can review it before sending.</p></div><form class="contact-form" id="contact-form" data-contact-email="${escapeAttribute(site.contactEmail)}"><label for="contact-name">Your name<input id="contact-name" name="name" autocomplete="name" required></label><label for="contact-reply">Your email<input id="contact-reply" name="reply" type="email" autocomplete="email" required></label><label for="contact-message">Your message<textarea id="contact-message" name="message" rows="5" required></textarea></label><button class="contact-submit" type="submit">Open email <span>↗</span></button><p class="contact-form-status" id="contact-form-status" role="status" aria-live="polite">Your email app will open with this message ready to send.</p></form></section></main>`
-  : `<main class="section-wrap static-page"><p class="eyebrow">CONTACT</p><h1>Contact</h1><p>Contact details will appear here when an email address is added to <code>content/site.json</code>.</p></main>`;
+  ? `
+    <main class="section-wrap static-page contact-page">
+      <p class="eyebrow">CONTACT</p>
+      <h1>Write to me.</h1>
+      <p class="contact-intro">Have a question or an idea to share? I would be glad to hear from you.</p>
+      <section class="contact-box" aria-label="Contact Inkverelle">
+        <div class="contact-box-details">
+          <p class="contact-box-label">EMAIL</p>
+          <a class="contact-email" href="mailto:${escapeAttribute(site.contactEmail)}">
+            ${escapeHTML(site.contactEmail)} <span>↗</span>
+          </a>
+          <a class="contact-social-link" href="${escapeAttribute(facebookUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Visit ${escapeAttribute(site.facebookName || site.name)} on Facebook">
+            <span>FACEBOOK</span>
+            <strong>${escapeHTML(site.facebookName || 'Inkverelle')} ↗</strong>
+          </a>
+          <p class="contact-response-note">Your email app will open with your message ready. You can review it before sending.</p>
+        </div>
+        <form class="contact-form" id="contact-form" data-contact-email="${escapeAttribute(site.contactEmail)}">
+          <label for="contact-name">
+            Your name
+            <input id="contact-name" name="name" autocomplete="name" required>
+          </label>
+          <label for="contact-reply">
+            Your email
+            <input id="contact-reply" name="reply" type="email" autocomplete="email" required>
+          </label>
+          <label for="contact-message">
+            Your message
+            <textarea id="contact-message" name="message" rows="5" required></textarea>
+          </label>
+          <button class="contact-submit" type="submit">Open email <span>↗</span></button>
+          <p class="contact-form-status" id="contact-form-status" role="status" aria-live="polite">
+            Your email app will open with this message ready to send.
+          </p>
+        </form>
+      </section>
+    </main>`
+  : `
+    <main class="section-wrap static-page">
+      <p class="eyebrow">CONTACT</p>
+      <h1>Contact</h1>
+      <p>Contact details will appear here when an email address is added to <code>content/site.json</code>.</p>
+    </main>`;
 writePage('contact/', `Contact — ${site.name}`, `Contact ${site.name}.`, contactContent);
-writePage('search/', `Search — ${site.name}`, `Search stories, poems, and reflections from ${site.name}.`, `<main class="section-wrap static-page search-page"><p class="eyebrow">SEARCH</p><h1>Find something to read</h1><label for="search-input">Search by title, poem, story, or phrase</label><input id="search-input" type="search" placeholder="Start typing…"><div id="search-results" class="search-results" role="status" aria-live="polite"></div></main>`);
-writePage('reading-list/', `Reading list — ${site.name}`, `Writing you have saved to read later.`, `<main class="section-wrap static-page reading-list-page"><p class="eyebrow">SAVED FOR LATER</p><h1>Reading list</h1><p>Anything you save will be kept in this browser.</p><p id="reading-list-status" class="reading-list-status" role="status" aria-live="polite">Loading your reading list…</p><div id="reading-list-items" class="reading-list-items"></div></main>`);
-writePage('privacy/', `Privacy — ${site.name}`, `Privacy information for ${site.name}.`, `<main class="section-wrap static-page"><p class="eyebrow">YOUR PRIVACY</p><h1>Privacy</h1><p>You can read and search the writing without signing in. If you save something to your reading list, that list stays in this browser on this device and isn’t sent to Inkverelle.</p><p>The site uses Google Fonts to display its type. The contact form opens your email app; it doesn’t collect or send messages itself.</p></main>`);
-writePage('404.html', `Page not found — ${site.name}`, `The requested page could not be found.`, `<main class="section-wrap static-page"><p class="eyebrow">404</p><h1>We couldn’t find that page.</h1><p>Check the address or head back to the journal.</p><a class="text-link" href="${url('')}">Back to Inkverelle <span>↗</span></a></main>`);
+const dashboardPage = fs.readFileSync(path.join(root, 'admin', 'index.html'), 'utf8');
+writePage('admin/', `Manage writing — ${site.name}`, `Private writing dashboard for ${site.name}.`, dashboardPage);
+writePage('author-dashboard/', `Author dashboard — ${site.name}`, `Submit writing and manage your author account.`, dashboardPage);
+writePage('authors/', `Author access — ${site.name}`, `Request an Inkverelle author account or sign in.`, fs.readFileSync(path.join(root, 'authors', 'index.html'), 'utf8'));
+writePage('activate/', `Activate author account — ${site.name}`, `Set a password for your Inkverelle author account.`, fs.readFileSync(path.join(root, 'activation', 'index.html'), 'utf8'));
+writePage('read/', `Read — ${site.name}`, `Read writing from ${site.name}.`, `
+  <main id="dynamic-article" class="article-page">
+    <p class="reading-column">Loading this piece…</p>
+  </main>
+  <section class="related-section section-wrap" id="dynamic-related-section" hidden>
+    <p class="eyebrow">MORE TO READ</p>
+    <h2>More from Inkverelle</h2>
+    <div class="writing-grid" id="dynamic-related"></div>
+  </section>`);
+writePage('search/', `Search — ${site.name}`, `Search stories, poems, and reflections from ${site.name}.`, `
+  <main class="section-wrap static-page search-page">
+    <p class="eyebrow">SEARCH</p>
+    <h1>Find something to read</h1>
+    <label for="search-input">Search by title, poem, story, or phrase</label>
+    <input id="search-input" type="search" placeholder="Start typing…">
+    <div id="search-results" class="search-results" role="status" aria-live="polite"></div>
+  </main>`);
+writePage('reading-list/', `Reading list — ${site.name}`, `Writing you have saved to read later.`, `
+  <main class="section-wrap static-page reading-list-page">
+    <p class="eyebrow">SAVED FOR LATER</p>
+    <h1>Reading list</h1>
+    <p>Anything you save will be kept in this browser.</p>
+    <p id="reading-list-status" class="reading-list-status" role="status" aria-live="polite">Loading your reading list…</p>
+    <div id="reading-list-items" class="reading-list-items"></div>
+  </main>`);
+writePage('privacy/', `Privacy — ${site.name}`, `How Inkverelle handles author account and reading-list information.`, `
+  <main class="section-wrap static-page">
+    <p class="eyebrow">YOUR PRIVACY</p>
+    <h1>Privacy</h1>
+    <div class="legal-copy">
+      <h2>Reading the site</h2>
+      <p>You can browse, read, and search all approved writing without an account. Your reading list is kept in this browser on this device.</p>
+      <h2>Author accounts</h2>
+      <p>If you request an account, Inkverelle stores the name and email address you provide, your request message, and the request decision. If an account is approved, it stores your account name and email, a one-way password hash, account status, and security session records. Passwords are never stored in plain text.</p>
+      <p>Writing submissions, review decisions, and account activity are stored in the site database so the journal can operate and moderate submissions. Hosting and database providers process information to provide these services. The site uses Google Fonts for typography. The contact form opens your email app and does not send or store the message itself.</p>
+      <p>Inkverelle uses Resend to deliver account-request notices, author invitations, and password reset messages. Resend receives the email address needed to deliver each message and, for invitations and resets, the one-time link in the message. Review <a href="https://resend.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">Resend’s privacy policy</a> for its handling of delivery data. Confirm the provider’s current processing terms and data locations before launch.</p>
+      <h2>How long information is kept</h2>
+      <p>Account requests and author records are kept while needed to review requests, operate accounts, administer the journal, and meet legal obligations. You may request access, correction, or deletion by emailing <a href="mailto:${escapeAttribute(site.contactEmail || '')}">${escapeHTML(site.contactEmail || 'the editor')}</a>. Some information may need to be retained for security, recordkeeping, or legal reasons.</p>
+      <h2>Your choices</h2>
+      <p>To stop using an author account or ask about your information, contact the editor at the address above. Approved public writing may remain visible until it is removed by the author or editor.</p>
+    </div>
+  </main>`);
+writePage('terms/', `Contributor Terms — ${site.name}`, `Terms for authors who submit writing to ${site.name}.`, `
+  <main class="section-wrap static-page">
+    <p class="eyebrow">FOR CONTRIBUTORS</p>
+    <h1>Contributor Terms</h1>
+    <p class="collection-intro">Version ${termsVersion}</p>
+    <div class="legal-copy">
+      <h2>Submitting your work</h2>
+      <p>You keep the copyright in writing you submit. You confirm that you created it or have permission to submit it, and that publishing it here will not knowingly violate another person’s rights or privacy.</p>
+      <h2>Permission to publish</h2>
+      <p>When you submit writing and an editor approves it, you give Inkverelle a non-exclusive, worldwide, royalty-free permission to host, reproduce, display, and distribute that work as part of the journal, including in its website, archive, and ordinary promotion of the journal. You may publish the same work elsewhere.</p>
+      <h2>Payment</h2>
+      <p>Inkverelle is a free literary journal. You agree that no fee, royalty, or other payment is offered or owed for submitting, approving, displaying, or reading work through Inkverelle. Readers can access approved work without paying.</p>
+      <h2>Editorial review and removal</h2>
+      <p>Submitting work does not guarantee approval or publication. The editor may decline, edit for presentation with your agreement, or remove work that appears unlawful, harmful, or unsuitable for the journal. You may ask the editor to remove your work. Removal applies to Inkverelle’s site going forward; cached copies, backups, or copies already shared by others may take longer to disappear or may remain outside the journal’s control.</p>
+      <h2>Respectful and lawful use</h2>
+      <p>Do not submit work that you do not have the right to share, that infringes another person’s rights, or that unlawfully discloses private information. Do not use an account to impersonate someone or interfere with the site.</p>
+      <h2>Accounts and privacy</h2>
+      <p>Account access is personal. Keep your password private and tell the editor if you believe someone else has accessed your account. The <a href="privacy/">Privacy page</a> explains what account and submission information Inkverelle stores and how to contact the editor about it.</p>
+      <h2>Applicable rights</h2>
+      <p>These terms describe the permissions and payment arrangement for contributors. They do not remove rights or responsibilities that cannot legally be waived, and they do not prevent a person from bringing a claim. Applicable law governs where these terms cannot be enforced as written.</p>
+      <p>By requesting an account, you confirm that you have read and agree to these terms. The system records the version you accepted.</p>
+    </div>
+  </main>`);
+writePage('404.html', `Page not found — ${site.name}`, `The requested page could not be found.`, `
+  <main class="section-wrap static-page">
+    <p class="eyebrow">404</p>
+    <h1>We couldn’t find that page.</h1>
+    <p>Check the address or head back to the journal.</p>
+    <a class="text-link" href="${url('')}">Back to Inkverelle <span>↗</span></a>
+  </main>`);
 
 const searchIndex = posts.map(post => ({ title: post.title, slug: post.slug, category: capitalize(post.category), excerpt: post.excerpt, read: post.read, date: post.date, tags: post.tags, url: url(`${post.slug}/`) }));
 fs.writeFileSync(path.join(output, 'search-index.json'), JSON.stringify(searchIndex));
-fs.writeFileSync(path.join(output, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${canonical('sitemap.xml')}\n`);
-fs.writeFileSync(path.join(output, 'sitemap.xml'), sitemap([...allRoutes, 'search-index.json']));
+fs.writeFileSync(path.join(output, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: ${url('admin/')}\nDisallow: ${url('author-dashboard/')}\nDisallow: ${url('authors/')}\nDisallow: ${url('activate/')}\nDisallow: ${url('api/')}\nSitemap: ${canonical('sitemap.xml')}\n`);
+const indexableRoutes = [...allRoutes].filter(route => !['admin/', 'author-dashboard/', 'authors/', 'activate/'].includes(route));
+fs.writeFileSync(path.join(output, 'sitemap.xml'), sitemap([...indexableRoutes, 'search-index.json']));
 console.log(`Built ${posts.length} published articles and ${allRoutes.size} routes into dist/`);
 
 function loadPosts() {
@@ -132,6 +316,7 @@ function loadPosts() {
     const post = {
       title: String(meta.title || ''), slug: String(meta.slug || path.basename(file, '.md')),
       category: String(meta.category || relative[0] || '').toLowerCase(), date: String(meta.date || ''),
+      author: String(meta.author || site.authorName || 'Newton Hinga'),
       excerpt: String(meta.excerpt || ''), read: String(meta.readingTime || readingTime(body)),
       poem: meta.poem === true, tags: Array.isArray(meta.tags) ? meta.tags.map(String) : [],
       status: String(meta.status || 'published').toLowerCase(), coverImage: String(meta.coverImage || ''),
@@ -161,19 +346,140 @@ function parseMarkdown(source) {
 }
 function splitParagraphs(body) { return body.split(/\r?\n\s*\r?\n/).map(value => value.trim()).filter(Boolean); }
 function renderParagraph(text) {
-  if (text.startsWith('## ')) return `<h2>${escapeHTML(text.slice(3))}</h2>`;
-  if (text.startsWith('### ')) return `<h3>${escapeHTML(text.slice(4))}</h3>`;
-  if (text.startsWith('> ')) return `<blockquote>${escapeHTML(text.slice(2))}</blockquote>`;
+  if (text.startsWith('## ')) {
+    return `<h2>${escapeHTML(text.slice(3))}</h2>`;
+  }
+  if (text.startsWith('### ')) {
+    return `<h3>${escapeHTML(text.slice(4))}</h3>`;
+  }
+  if (text.startsWith('> ')) {
+    return `<blockquote>${escapeHTML(text.slice(2))}</blockquote>`;
+  }
   return `<p>${renderInline(text).replace(/\r?\n/g, '<br>')}</p>`;
 }
-function renderInline(text) { return escapeHTML(text).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/\*([^*]+)\*/g, '<em>$1</em>'); }
+function renderInline(text) {
+  return escapeHTML(text)
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+}
 function card(post, index = 0) {
   const art = `art-${index % 6 + 1}`;
-  return `<article class="writing-card"><a class="writing-card-link" href="${url(`${post.slug}/`)}" aria-label="Read ${escapeAttribute(post.title)}"><div class="card-art ${art}"><span class="art-tag">${escapeHTML(capitalize(post.category))}</span></div><div class="card-info"><span class="card-date">${formatDate(post.date)}</span><h3>${escapeHTML(post.title)}</h3><p>${escapeHTML(post.excerpt)}</p><div class="card-footer"><span>${escapeHTML(post.read)}</span><span>READ ↗</span></div></div></a></article>`;
+  return `
+    <article class="writing-card">
+      <a class="writing-card-link" href="${url(`${post.slug}/`)}" aria-label="Read ${escapeAttribute(post.title)}">
+        <div class="card-art ${art}">
+          <span class="art-tag">${escapeHTML(capitalize(post.category))}</span>
+        </div>
+        <div class="card-info">
+          <span class="card-date">${formatDate(post.date)}</span>
+          <h3>${escapeHTML(post.title)}</h3>
+          <span class="card-author">By ${escapeHTML(post.author || site.authorName)}</span>
+          <p>${escapeHTML(post.excerpt)}</p>
+          <div class="card-footer">
+            <span>${escapeHTML(post.read)}</span>
+            <span>READ ↗</span>
+          </div>
+        </div>
+      </a>
+    </article>`;
 }
 function renderLayout(route, title, description, content, options = {}) {
-  const searchDialog = route === 'search/' ? '' : `<dialog class="search-dialog" id="search-dialog"><form method="dialog"><button class="dialog-close" aria-label="Close search">×</button></form><p class="eyebrow">WHAT WOULD YOU LIKE TO READ?</p><label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"></circle><path d="m16 16 4.2 4.2"></path></svg><input id="search-input" type="search" placeholder="Search poems, stories, and reflections…"></label><div id="search-results" class="search-results" role="status" aria-live="polite"></div><span class="search-hint">Press / or Ctrl/⌘ K to search · Esc to close</span></dialog>`;
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><base href="${escapeAttribute(basePath)}"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#1e302b"><meta name="description" content="${escapeAttribute(description)}"><title>${escapeHTML(title)}</title>${headMetadata(route, title, description, options)}<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="assets/css/styles.css"><link rel="stylesheet" href="assets/css/brand.css"><link rel="stylesheet" href="assets/css/archive.css"><link rel="stylesheet" href="assets/css/professional.css"><link rel="stylesheet" href="assets/css/motion-responsive.css"><link rel="stylesheet" href="assets/css/publishing.css"><link rel="stylesheet" href="assets/css/editorial.css"><link rel="stylesheet" href="assets/css/wireframe.css"><link rel="stylesheet" href="assets/css/mobile.css?v=20261020-mobile-related-v6"></head><body><a class="skip-link" href="#main">Skip to content</a><header id="top" class="site-header"><a class="wordmark" href="${url('')}" aria-label="Inkverelle home"><img src="assets/images/inkverelle-wordmark-transparent.png" alt="Inkverelle — Where words become worlds"></a><button class="menu-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Open navigation"><span></span><span></span></button><nav id="site-nav" class="site-nav" aria-label="Main navigation"><a class="nav-link" href="${url('')}">Home</a><a class="nav-link" href="${url('stories/')}">Stories</a><a class="nav-link" href="${url('poetry/')}">Poetry</a><a class="nav-link" href="${url('reflections/')}">Reflections</a><a class="nav-link" href="${url('about/')}">About</a><a class="nav-link" href="${url('contact/')}">Contact</a><button class="search-open" aria-label="Search Inkverelle"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"></circle><path d="m16 16 4.2 4.2"></path></svg></button></nav></header><div id="main" tabindex="-1">${content}</div><footer class="site-footer"><div class="footer-top"><a class="wordmark" href="${url('')}" aria-label="Inkverelle home"><img src="assets/images/inkverelle-wordmark-transparent.png" alt="Inkverelle — Where words become worlds"></a><p>Poems, stories, and reflections.</p><a href="#top" class="back-top">Back to top ↑</a></div><div class="footer-bottom"><span>© ${new Date().getFullYear()} ${escapeHTML(site.name)}</span><div><a href="${url('stories/')}">Stories</a><a href="${url('poetry/')}">Poetry</a><a href="${url('reflections/')}">Reflections</a><a href="${url('about/')}">About</a><a href="${url('reading-list/')}">Reading list</a><a href="${url('contact/')}">Contact</a></div><span>An independent literary journal.</span></div></footer>${searchDialog}<script src="assets/js/app.js" defer></script></body></html>`;
+  const dashboardStyles = ['admin/', 'author-dashboard/', 'authors/', 'activate/'].includes(route)
+    ? `<link rel="stylesheet" href="${url('admin/admin.css')}">`
+    : '';
+  const searchDialog = route === 'search/' ? '' : `
+    <dialog class="search-dialog" id="search-dialog">
+      <form method="dialog">
+        <button class="dialog-close" aria-label="Close search">×</button>
+      </form>
+      <p class="eyebrow">WHAT WOULD YOU LIKE TO READ?</p>
+      <label class="search-box">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="10.8" cy="10.8" r="6.6"></circle>
+          <path d="m16 16 4.2 4.2"></path>
+        </svg>
+        <input id="search-input" type="search" placeholder="Search poems, stories, and reflections…">
+      </label>
+      <div id="search-results" class="search-results" role="status" aria-live="polite"></div>
+      <span class="search-hint">Press / or Ctrl/⌘ K to search · Esc to close</span>
+    </dialog>`;
+
+  return `
+    <!doctype html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <base href="${escapeAttribute(basePath)}">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#1e302b">
+        <meta name="description" content="${escapeAttribute(description)}">
+        <title>${escapeHTML(title)}</title>
+        ${headMetadata(route, title, description, options)}
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="assets/css/styles.css">
+        <link rel="stylesheet" href="assets/css/brand.css">
+        <link rel="stylesheet" href="assets/css/archive.css">
+        <link rel="stylesheet" href="assets/css/professional.css">
+        <link rel="stylesheet" href="assets/css/motion-responsive.css">
+        <link rel="stylesheet" href="assets/css/publishing.css">
+        <link rel="stylesheet" href="assets/css/editorial.css">
+        <link rel="stylesheet" href="assets/css/wireframe.css">
+        <link rel="stylesheet" href="assets/css/mobile.css?v=20261020-mobile-related-v6">
+        ${dashboardStyles}
+      </head>
+      <body>
+        <a class="skip-link" href="#main">Skip to content</a>
+        <header id="top" class="site-header">
+          <a class="wordmark" href="${url('')}" aria-label="Inkverelle home">
+            <img src="assets/images/inkverelle-wordmark-transparent.png" alt="Inkverelle — Where words become worlds">
+          </a>
+          <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Open navigation">
+            <span></span><span></span>
+          </button>
+          <nav id="site-nav" class="site-nav" aria-label="Main navigation">
+            <a class="nav-link" href="${url('')}">Home</a>
+            <a class="nav-link" href="${url('stories/')}">Stories</a>
+            <a class="nav-link" href="${url('poetry/')}">Poetry</a>
+            <a class="nav-link" href="${url('reflections/')}">Reflections</a>
+            <a class="nav-link" href="${url('about/')}">About</a>
+            <a class="nav-link" href="${url('contact/')}">Contact</a>
+            <button class="search-open" aria-label="Search Inkverelle">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="10.8" cy="10.8" r="6.6"></circle>
+                <path d="m16 16 4.2 4.2"></path>
+              </svg>
+            </button>
+          </nav>
+        </header>
+        <div id="main" tabindex="-1">${content}</div>
+        <footer class="site-footer">
+          <div class="footer-top">
+            <a class="wordmark" href="${url('')}" aria-label="Inkverelle home">
+              <img src="assets/images/inkverelle-wordmark-transparent.png" alt="Inkverelle — Where words become worlds">
+            </a>
+            <p>Poems, stories, and reflections.</p>
+            <a href="#top" class="back-top">Back to top ↑</a>
+          </div>
+          <div class="footer-bottom">
+            <span>© ${new Date().getFullYear()} ${escapeHTML(site.name)}</span>
+            <div>
+              <a href="${url('stories/')}">Stories</a>
+              <a href="${url('poetry/')}">Poetry</a>
+              <a href="${url('reflections/')}">Reflections</a>
+              <a href="${url('about/')}">About</a>
+              <a href="${url('reading-list/')}">Reading list</a>
+              <a href="${url('contact/')}">Contact</a>
+              <a href="${url('authors/')}">For authors</a>
+            </div>
+            <span>An independent literary journal.</span>
+          </div>
+        </footer>
+        ${searchDialog}
+        <script src="assets/js/app.js" defer></script>
+      </body>
+    </html>`;
 }
 function writePage(route, title, description, content, options = {}) {
   const dest = path.join(output, route);

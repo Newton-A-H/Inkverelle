@@ -1,0 +1,234 @@
+.admin-page {
+  max-width: 980px;
+  padding-top: 70px;
+  padding-bottom: 100px;
+}
+.admin-intro {
+  max-width: 620px;
+  color: #68756e;
+  font: 17px/1.7 var(--serif);
+}
+.admin-panel {
+  margin-top: 32px;
+  padding: clamp(22px, 5vw, 44px);
+  border: 1px solid #d8ded8;
+  background: #fffefa;
+}
+.admin-panel h2 {
+  margin: 0 0 9px;
+  color: #20372f;
+  font: 500 30px/1.2 var(--serif);
+}
+.admin-panel>p {
+  color: #6d766f;
+  line-height: 1.6;
+}
+.admin-form {
+  display: grid;
+  gap: 17px;
+  margin-top: 24px;
+}
+.admin-form label {
+  display: grid;
+  gap: 7px;
+  color: #30483f;
+  font-size: 12px;
+  font-weight: 600;
+}
+.admin-form input,.admin-form textarea,.admin-form select {
+  width: 100%;
+  min-height: 46px;
+  padding: 12px 13px;
+  border: 1px solid #cdd6cf;
+  border-radius: 2px;
+  background: #fff;
+  color: #24372f;
+  font: 14px var(--sans);
+}
+.admin-form textarea {
+  min-height: 250px;
+  resize: vertical;
+  line-height: 1.65;
+}
+.admin-form input:focus,.admin-form textarea:focus,.admin-form select:focus {
+  outline: 2px solid #8da595;
+  outline-offset: 2px;
+}
+.admin-form small {
+  color: #788179;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 15px;
+}
+.admin-actions,.managed-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.admin-actions button,.managed-actions button {
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid #25463b;
+  background: #25463b;
+  color: #fff;
+  cursor: pointer;
+}
+.admin-actions button.secondary,.managed-actions button {
+  background: transparent;
+  color: #25463b;
+}
+.admin-actions button:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+.admin-message {
+  min-height: 1.5em;
+  margin: 12px 0 0;
+  color: #315c47;
+  font-size: 13px;
+}
+.admin-message.is-error {
+  color: #9c4337;
+}
+.admin-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 20px;
+}
+.managed-piece {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #e0e5de;
+  background: #faf9f4;
+}
+.managed-piece .eyebrow {
+  margin: 0 0 6px;
+  color: #8a7156;
+  font-size: 9px;
+}
+.managed-piece h3 {
+  margin: 0;
+  color: #20372f;
+  font: 500 19px/1.3 var(--serif);
+}
+.managed-date,.admin-empty {
+  margin: 5px 0 0;
+  color: #7d837c;
+  font-size: 11px;
+}
+.managed-actions button.remove-writing {
+  border-color: #b5655a;
+  color: #9c4337;
+}
+.admin-signout {
+  float: right;
+  padding: 9px 12px;
+  border: 1px solid #9aa99d;
+  background: transparent;
+  color: #30483f;
+  cursor: pointer;
+}
+.admin-panel[hidden],
+.admin-form label[hidden] {
+  display: none;
+}
+.consent-check {
+  grid-template-columns: auto 1fr !important;
+  align-items: start;
+  gap: 10px !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  line-height: 1.55;
+}
+.consent-check input {
+  width: 18px;
+  min-height: 18px;
+  margin: 2px 0 0;
+  padding: 0;
+}
+.consent-check a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.form-trap {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+}
+.invite-result {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px solid #c7d4ca;
+  background: #f5f8f4;
+}
+.invite-result p {
+  margin: 0;
+  color: #30483f;
+  line-height: 1.55;
+}
+.invite-result input {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px;
+  border: 1px solid #cdd6cf;
+  color: #24372f;
+}
+.admin-tools {
+  margin-top: 36px;
+}
+.card-author {
+  display: block;
+  margin: -2px 0 12px;
+  color: #69776e;
+  font-size: 11px;
+  letter-spacing: .02em;
+}
+.legal-copy h2 {
+  margin-top: 34px;
+}
+@media(max-width:600px) {
+  .admin-page {
+    padding-top: 42px;
+    padding-bottom: 60px;
+  }
+  .admin-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .managed-piece {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .admin-signout {
+    float: none;
+    margin-bottom: 18px;
+  }
+}
+[data-mfa-setup="true"] > :not(#mfa-setup-panel):not(#admin-sign-out) {
+  display: none !important;
+}
+
+#mfa-secret,
+#mfa-recovery-codes {
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+#mfa-recovery-codes {
+  padding: 1rem;
+  background: #f5f2eb;
+  color: #1e302b;
+}

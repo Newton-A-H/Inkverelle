@@ -1,0 +1,106 @@
+<main class="section-wrap static-page admin-page">
+  <p class="eyebrow">INKVERELLE EDITOR</p>
+  <h1>Writing dashboard</h1>
+  <p class="admin-intro">Sign in to submit writing or manage the journal. New work appears publicly after an editor approves it.</p>
+  <p class="admin-message" id="admin-message" role="status" aria-live="polite"></p>
+  <section class="admin-panel" id="admin-login-panel" aria-labelledby="login-title">
+    <h2 id="login-title">Sign in</h2>
+    <p>Use the email address and password for your Inkverelle account.</p>
+    <form class="admin-form" id="admin-login-form">
+      <label for="admin-email">
+        Email address
+        <input id="admin-email" name="email" type="email" autocomplete="username" maxlength="254" required>
+      </label>
+      <label for="admin-password">
+        Password
+        <input id="admin-password" name="password" type="password" autocomplete="current-password" required>
+      </label>
+      <label for="admin-totp-code" id="admin-totp-label" hidden>
+        Authenticator or recovery code
+        <input id="admin-totp-code" name="totpCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="24">
+      </label>
+      <div class="admin-actions"><button type="submit">Continue</button></div>
+    </form>
+  </section>
+  <section class="admin-panel" id="admin-dashboard" aria-labelledby="writing-form-title" hidden>
+    <button class="admin-signout" id="admin-sign-out" type="button">Sign out</button>
+    <section class="admin-panel" id="mfa-setup-panel" hidden aria-labelledby="mfa-setup-title">
+      <h2 id="mfa-setup-title">Secure your administrator account</h2>
+      <p>Set up an authenticator app before opening the editor controls. Save the recovery codes somewhere private.</p>
+      <p id="mfa-setup-error" class="admin-message" role="status" aria-live="polite"></p>
+      <p>Enter this key in your authenticator app: <strong id="mfa-secret"></strong></p>
+      <label for="mfa-setup-code">Six-digit code<input id="mfa-setup-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6"></label>
+      <div class="admin-actions"><button id="mfa-enable" type="button">Enable MFA</button></div>
+      <div id="mfa-recovery-panel" hidden>
+        <h3>Save these recovery codes</h3>
+        <p>Each code works once. They will not be shown again.</p>
+        <pre id="mfa-recovery-codes"></pre>
+        <button id="mfa-continue" type="button">Continue to dashboard</button>
+      </div>
+    </section>
+    <p class="eyebrow" id="signed-in-as"></p>
+    <h2 id="writing-form-title">Submit a poem, story, or reflection</h2>
+    <p>Use a blank line between paragraphs or poem stanzas. Surround words with **two asterisks** to make them bold.</p>
+    <form class="admin-form" id="writing-form">
+      <input id="post-id" name="postId" type="hidden" value="">
+      <label for="writing-title">
+        Title
+        <input id="writing-title" name="title" maxlength="140" required>
+      </label>
+      <div class="admin-form-grid">
+        <label for="writing-category">
+          Section
+          <select id="writing-category" name="category" required>
+            <option value="poetry">Poetry</option>
+            <option value="stories">Stories</option>
+            <option value="reflections">Reflections</option>
+          </select>
+        </label>
+        <label for="writing-date">
+          Date
+          <input id="writing-date" name="date" type="date" required>
+        </label>
+      </div>
+      <label for="writing-excerpt">
+        Short description
+        <input id="writing-excerpt" name="excerpt" maxlength="320" required>
+        <small>This appears on the writing cards and in search.</small>
+      </label>
+      <label for="writing-tags">
+        Tags
+        <input id="writing-tags" name="tags" placeholder="memory, home, hope">
+        <small>Separate tags with commas.</small>
+      </label>
+      <label for="writing-status" id="writing-status-label">
+        When you’re ready
+        <select id="writing-status" name="status">
+          <option value="PENDING_REVIEW">Send to the editor for review</option>
+          <option value="DRAFT">Save as a draft</option>
+        </select>
+      </label>
+      <label for="writing-body">
+        Your writing
+        <textarea id="writing-body" name="body" maxlength="50000" required></textarea>
+        <small>Up to 50,000 characters. Keep line breaks as you want them to appear.</small>
+      </label>
+      <div class="admin-actions"><button id="save-writing" type="submit">Send for review</button><button class="secondary" id="cancel-edit" type="button">Clear form</button></div>
+    </form>
+    <hr>
+    <h2 id="managed-writing-heading">Your writing</h2>
+    <div class="admin-list" id="managed-writing" aria-live="polite"></div>
+    <section class="admin-panel" id="admin-tools" hidden aria-labelledby="admin-tools-title">
+      <h2 id="admin-tools-title">Editor controls</h2>
+      <form class="admin-form" id="invite-author-form">
+        <h3>Invite an author</h3>
+        <label for="invite-name">Author name<input id="invite-name" name="name" maxlength="100" required></label>
+        <label for="invite-email">Author email<input id="invite-email" name="email" type="email" maxlength="254" required></label>
+        <div class="admin-actions"><button type="submit">Create invitation</button></div>
+      </form>
+      <h3>Account requests</h3>
+      <div class="admin-list" id="account-requests" aria-live="polite"></div>
+      <h3>Author accounts</h3>
+      <div class="admin-list" id="author-accounts" aria-live="polite"></div>
+    </section>
+  </section>
+</main>
+<script src="assets/js/admin-v2.js" defer></script>

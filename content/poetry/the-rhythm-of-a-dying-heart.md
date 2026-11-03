@@ -1,5 +1,6 @@
 ---
 title: "The Rhythm of a Dying Heart"
+author: "Newton Hinga"
 slug: the-rhythm-of-a-dying-heart
 category: poetry
 date: 2026-10-20

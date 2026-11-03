@@ -1,5 +1,6 @@
 ---
 title: "The Letter I Wrote to November"
+author: "Newton Hinga"
 slug: the-letter-i-wrote-to-november
 category: reflections
 date: 2026-10-26

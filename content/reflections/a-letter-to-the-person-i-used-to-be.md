@@ -1,5 +1,6 @@
 ---
 title: "A Letter to the Person I Used to Be"
+author: "Newton Hinga"
 slug: a-letter-to-the-person-i-used-to-be
 category: reflections
 date: 2026-10-20

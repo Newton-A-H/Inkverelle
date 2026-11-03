@@ -1,5 +1,6 @@
 ---
 title: "The borrowed garden"
+author: "Newton Hinga"
 slug: the-borrowed-garden
 category: stories
 date: 2026-09-10

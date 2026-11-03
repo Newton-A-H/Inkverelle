@@ -1,5 +1,6 @@
 ---
 title: "The art of paying attention"
+author: "Newton Hinga"
 slug: the-art-of-paying-attention
 category: reflections
 date: 2026-10-12

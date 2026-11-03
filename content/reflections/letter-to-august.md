@@ -1,5 +1,6 @@
 ---
 title: "The letter I wrote to August"
+author: "Newton Hinga"
 slug: letter-to-august
 category: reflections
 date: 2026-09-19
