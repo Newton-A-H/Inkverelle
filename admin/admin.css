@@ -54,6 +54,35 @@
   outline: 2px solid #8da595;
   outline-offset: 2px;
 }
+.password-field {
+  position: relative;
+  display: block;
+}
+.password-field input {
+  padding-right: 74px;
+}
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  min-width: 54px;
+  min-height: 34px;
+  padding: 6px 8px;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: #315c47;
+  font: 600 12px var(--sans);
+  cursor: pointer;
+}
+.password-toggle:hover {
+  background: #edf2ed;
+}
+.password-toggle:focus-visible {
+  outline: 2px solid #8da595;
+  outline-offset: 1px;
+}
 .admin-form small {
   color: #788179;
   font-size: 11px;

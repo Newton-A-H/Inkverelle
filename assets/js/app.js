@@ -3,6 +3,19 @@ if (!/(?:^|\/)admin(?:\/|$)/i.test(window.location.pathname)) {
   document.addEventListener('contextmenu', event => event.preventDefault());
 }
 
+document.querySelectorAll('[data-password-toggle]').forEach(button => {
+  const input = document.getElementById(button.getAttribute('aria-controls'));
+  if (!input) return;
+
+  button.addEventListener('click', () => {
+    const showPassword = input.type === 'password';
+    input.type = showPassword ? 'text' : 'password';
+    button.textContent = showPassword ? 'Hide' : 'Show';
+    button.setAttribute('aria-label', `${showPassword ? 'Hide' : 'Show'} password`);
+    button.setAttribute('aria-pressed', String(showPassword));
+  });
+});
+
 const menuButton = document.querySelector('.menu-toggle');
 const siteNav = document.querySelector('#site-nav');
 menuButton?.addEventListener('click', () => {

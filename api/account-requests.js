@@ -50,7 +50,10 @@ export default async function handler(req, res) {
       await prisma.accountRequest.create({
         data: { email, name, reason, termsVersion }
       });
-      await sendAccountRequestNotice();
+      const notification = await sendAccountRequestNotice({ name, email });
+      if (!notification.sent) {
+        console.warn('Inkverelle admin request notification was not delivered:', notification.reason);
+      }
     }
     await recordRateLimit('account-request', email, req);
     return reply(res, 201, { received: true });

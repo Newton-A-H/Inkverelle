@@ -101,12 +101,12 @@ function appendInviteResult(container, invitationUrl) {
 
 function reportInvitation(container, result, type = 'invitation') {
   if (result.emailSent) {
-    showMessage(type === 'reset' ? 'Password reset email sent.' : 'Invitation email sent.');
+    showMessage(type === 'reset' ? 'Password reset email sent.' : 'Activation email sent.');
     return;
   }
   if (result.invitationUrl) {
     appendInviteResult(container, result.invitationUrl);
-    showMessage(`Email could not be sent. Copy the ${type === 'reset' ? 'reset' : 'invitation'} link and send it manually.`, true);
+    showMessage(`Email could not be sent. Copy the ${type === 'reset' ? 'reset' : 'activation'} link and send it manually.`, true);
     return;
   }
   showMessage('The email could not be sent and no link was created. Please try again.', true);
