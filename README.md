@@ -38,7 +38,7 @@ Inkverelle sends account-request notices to `ADMIN_NOTIFICATION_EMAIL` (or the b
 
 Resend receives recipient email addresses and the one-time invitation or reset URL for those messages. The privacy page describes this transfer; review Resend's current [privacy policy](https://resend.com/legal/privacy-policy), [data processing addendum](https://resend.com/legal/dpa), and subprocessors before launch.
 
-Before the first deployment, install dependencies and apply the database migration:
+The Vercel production build runs `npm run db:deploy` before generating the static pages, using the database connection configured for Production. Confirm that the connected database is scoped to Production before deploying.
 
 ```sh
 npm install
@@ -46,7 +46,7 @@ npm run db:deploy
 npm run build
 ```
 
-Connect the project to the database before running migrations. Keep `DATABASE_URL` direct and use the provider's pooled URL in `DATABASE_URL_POOLED`. Vercel Functions use the pooled connection; Prisma migration commands use the direct one.
+For local manual migrations, use a direct connection. Neon’s Vercel integration provides `DATABASE_URL` for pooled connections and `DATABASE_URL_UNPOOLED` for direct migrations; Prisma’s config prefers the unpooled URL when it is available. The application uses `DATABASE_URL_POOLED` when set, otherwise it uses `DATABASE_URL`.
 
 For local development, copy `.env.example` to `.env`, fill in development database credentials and unique local secrets, then run:
 
